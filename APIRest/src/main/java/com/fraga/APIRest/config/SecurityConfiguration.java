@@ -6,13 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.fraga.APIRest.security.jwt.JwtConfigurer;
@@ -36,11 +33,9 @@ public class SecurityConfiguration {
 		return http.getSharedObject(AuthenticationManagerBuilder.class).userDetailsService(userDetailService)
 				.passwordEncoder(bCryptPasswordEncoder).and().build();
 	}
+	
+	
 
-	@Bean
-	public Pbkdf2PasswordEncoder pbkdf2PasswordEncoder() {
-		return new Pbkdf2PasswordEncoder();
-	}
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -51,14 +46,9 @@ public class SecurityConfiguration {
 		.and()
 			.authorizeRequests()
 			.antMatchers("/auth/signin", "/api-docs/**", "/swagger-ui.html**").permitAll()
-			.antMatchers(HttpMethod.POST, "/api/movie/v1/**").hasAuthority("ADMIN")
-			.antMatchers(HttpMethod.PUT, "/api/movie/v1/**").hasAuthority("ADMIN")
-			.antMatchers(HttpMethod.DELETE, "/api/movie/v1/**").hasAuthority("ADMIN")
 			.antMatchers(HttpMethod.POST, "/api/user/v1/**").anonymous()
-			.antMatchers(HttpMethod.PUT, "/api/user/v1/**").authenticated()
-			.antMatchers(HttpMethod.GET, "/api/user/v1/id/**").authenticated()
-			.antMatchers(HttpMethod.GET, "/api/user/v1/search/active_users/**").hasAuthority("ADMIN")
-			.antMatchers(HttpMethod.GET, "/api/user/v1/search/all/**").hasAuthority("ADMIN")
+			.antMatchers("/api/user/**", "/api/movie/**").authenticated()
+			.antMatchers("/api/admin/**").hasAuthority("ADMIN")
 		.and()
 			.cors()
 		.and()

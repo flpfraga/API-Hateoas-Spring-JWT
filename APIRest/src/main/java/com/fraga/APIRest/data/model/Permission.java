@@ -30,7 +30,12 @@ public class Permission implements GrantedAuthority, Serializable {
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
+	public Permission(long id, String description) {
+        this.id= id;
+        this.description = description;
+    }
+
+    @Override
 	public int hashCode() {
 		return Objects.hash(description, id);
 	}
