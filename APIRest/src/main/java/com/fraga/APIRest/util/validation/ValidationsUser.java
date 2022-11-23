@@ -1,4 +1,4 @@
-package com.fraga.APIRest.component;
+package com.fraga.APIRest.util.validation;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -6,16 +6,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.fraga.APIRest.data.model.User;
+import com.fraga.APIRest.exception.InvalidParams;
 
 @Component
-public class ValidUserActions {
+public class ValidationsUser implements SecurityValidations<User> {
+
 
     /**
      * Get the userName of the user was authenticate.
      * 
      * @return String
      */
-    public String getUserNameInUse() {
+    @Override
+    public String nameInUse() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
             return ((UserDetails) principal).getUsername();
@@ -30,21 +33,38 @@ public class ValidUserActions {
      * 
      * @param String userName
      */
-    public boolean validUpdateAction(String userName) {
-        System.out.println("valid username " + userName + " getUserNameInUse " + getUserNameInUse());
-        if (!userName.equals(getUserNameInUse())) {
-            
+    @Override
+    public boolean validUpdateActions(String userName) {
+        
+        System.out.println("valid update actions " + userName);
+        
+        if (!userName.equals(nameInUse())) {
+
             return false;
         }
         return true;
-
     }
-    
-    public boolean isAdminUser(User user) {
-        for (GrantedAuthority g : user.getPermissions()) {
+
+    @Override
+    public boolean validEntity(User entity) {
+        
+        
+        if (entity.getUserName().equals(null) || entity.getUserName().equals(""))
+            return false;
+        if (entity.getPassword().equals(null) || entity.getPassword().equals(""))
+            throw new InvalidParams("Password can`t be null!");
+        return true;
+    }
+   
+
+    @Override
+    public boolean isAdminUser(User entity) {
+        
+        for (GrantedAuthority g : entity.getPermissions()) {
             if (g.equals("ADMIN"))
                 return true;
         }
         return false;
     }
+
 }

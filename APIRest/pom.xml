@@ -39,6 +39,13 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- for SpringBoot configuration processor -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- for MySql support -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -97,6 +104,9 @@
 			<artifactId>java-jwt</artifactId>
 			<version>3.19.2</version>
 		</dependency>
+
+
+
 
 	</dependencies>
 

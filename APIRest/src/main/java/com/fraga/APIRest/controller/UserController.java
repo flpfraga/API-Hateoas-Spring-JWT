@@ -1,7 +1,6 @@
 package com.fraga.APIRest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fraga.APIRest.data.vo.UserVO;
-import com.fraga.APIRest.queryManager.Pagination;
 import com.fraga.APIRest.service.UserService;
-import com.fraga.APIRest.util.ValidDataParams;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -67,8 +64,6 @@ public class UserController {
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content), })
     public ResponseEntity<UserVO> create(@RequestBody UserVO userVO) {
 
-        // Check the not nullable user params
-        ValidDataParams.validCreateUser(userVO);
         return ResponseEntity.ok(service.create(userVO));
     }
 
@@ -90,9 +85,6 @@ public class UserController {
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content), })
     public ResponseEntity<UserVO> update(@PathVariable("id") Long id, @RequestBody UserVO userVO) {
-
-        // Check the not nullable user params
-        ValidDataParams.validCreateUser(userVO);
 
         return ResponseEntity.ok(service.update(id, userVO));
     }
@@ -138,8 +130,6 @@ public class UserController {
             @RequestParam(value = "movie_id") Long movie_id,
             @RequestParam(value = "vote", required = true) Long vote) {
 
-        // Valida se o voto está entre 0 e 4.
-        ValidDataParams.validVoteNumber(vote);
         return service.voteForMovie(id, movie_id, vote);
 
     }

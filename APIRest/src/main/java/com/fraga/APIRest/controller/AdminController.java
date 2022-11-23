@@ -1,10 +1,6 @@
 package com.fraga.APIRest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fraga.APIRest.data.model.User;
 import com.fraga.APIRest.data.vo.MovieVO;
 import com.fraga.APIRest.data.vo.UserVO;
+import com.fraga.APIRest.exception.InvalidParams;
 import com.fraga.APIRest.service.MovieService;
 import com.fraga.APIRest.service.UserService;
-import com.fraga.APIRest.util.ValidDataParams;
+import com.fraga.APIRest.util.queryManager.QueryParams;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -40,6 +38,9 @@ public class AdminController {
 
     @Autowired
     private MovieService movieService;
+    
+    @Autowired
+    private QueryParams<User> queryParams;
 
     /**
      * Return all user, not admin, actives. Default, order asc. Pagable option.
@@ -60,18 +61,25 @@ public class AdminController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
             @RequestParam(value = "orderBy", defaultValue = "asc") String orderBy) {
-
-        // Option no pagination
+        
+        User user = new User();
+        user.setActive(true);
+        queryParams.setEntity(user);
+        queryParams.setPage(page);
+        queryParams.setSize(size);
+        
+        
+     // Option no pagination
         if (page == null) {
-            return ResponseEntity.ok(userService.readAllActives(Sort.by(Direction.ASC, "userName")));
+            return ResponseEntity.ok(userService.findAllWithFilterAndPagination(queryParams));
+        } 
+        else if (!queryParams.pageIsValid()) {
+            throw new InvalidParams("Invalids values for pagination!");
         }
-
-        // Check if the params are valids
-        ValidDataParams.validReadAll(page, size);
-
-        // Option with pagination
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.ASC, "username"));
-        return ResponseEntity.ok(userService.readAllActives(pageable));
+        
+        //
+        return ResponseEntity.ok(userService.findAllWithFilterAndPagination(queryParams));
+        
     }
 
     /**
@@ -92,7 +100,6 @@ public class AdminController {
     public ResponseEntity<UserVO> create(@RequestBody UserVO userVO) {
         
         //Check valid not nullable params
-        ValidDataParams.validCreateUser(userVO);
         return ResponseEntity.ok(userService.createAdminUser(userVO));
     }
 
@@ -158,8 +165,7 @@ public class AdminController {
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content), })
     public ResponseEntity<MovieVO> createMovie(@RequestBody MovieVO movieVO) {
         
-      //Check valid not nullable params
-        ValidDataParams.validCreateMovie(movieVO);
+     
         return ResponseEntity.ok(movieService.create(movieVO));
     }
 
@@ -176,11 +182,9 @@ public class AdminController {
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
     })
-    public ResponseEntity update(@PathVariable("id") Long id, @RequestBody MovieVO movieVO) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody MovieVO movieVO) {
         
-      //Check valid not nullable params
-        ValidDataParams.validCreateMovie(movieVO);
-        
+      
         return ResponseEntity.ok(movieService.update(id, movieVO));
     }
 

@@ -9,11 +9,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.fraga.APIRest.component.ValidUserActions;
 import com.fraga.APIRest.controller.MovieController;
 import com.fraga.APIRest.controller.UserController;
 import com.fraga.APIRest.converter.DozerConverter;
@@ -30,14 +25,17 @@ import com.fraga.APIRest.data.model.Permission;
 import com.fraga.APIRest.data.model.User;
 import com.fraga.APIRest.data.vo.UserVO;
 import com.fraga.APIRest.exception.BadCredentialsException;
+import com.fraga.APIRest.exception.InvalidParams;
 import com.fraga.APIRest.exception.ResourceConflitException;
 import com.fraga.APIRest.exception.ResourceNotFoundException;
 import com.fraga.APIRest.repository.MovieRepository;
 import com.fraga.APIRest.repository.UserRepository;
-import com.fraga.APIRest.security.cripting.PasswordEncripiting;
+import com.fraga.APIRest.security.cripting.PasswordEncripitingBCrypt;
+import com.fraga.APIRest.util.queryManager.QueryParams;
+import com.fraga.APIRest.util.validation.SecurityValidations;
 
 @Service
-public class UserService extends AbstractService<UserVO> implements UserDetailsService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository repository;
@@ -46,7 +44,7 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
     private MovieRepository movieRepository;
 
     @Autowired
-    private ValidUserActions validUserActions;
+    private SecurityValidations<User> validations;
 
     /**
      * Get a list users. Access just for admin users.
@@ -54,9 +52,8 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
      * @param Pageable
      * @return Page<UserVO>
      */
-    @Override
-    public Page<UserVO> readAll(Pageable pageable) {
-        var userPage = repository.findAll(pageable);
+    public Page<UserVO> readAll(QueryParams<User> queryParams) {
+        var userPage = repository.findAll(queryParams.pagination());
         var userVOPage = userPage.map(p -> DozerConverter.parseObject(p, UserVO.class));
         userVOPage.map(p -> p.add(linkTo(methodOn(UserController.class).readById(p.getKey())).withSelfRel()));
         return userVOPage;
@@ -68,8 +65,8 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
      * @param Long
      * @return UserVO
      */
-    @Override
     public UserVO readById(Long id) {
+
         var entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records matches for this ID!"));
         UserVO vo = DozerConverter.parseObject(entity, UserVO.class);
@@ -83,12 +80,21 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
      * @Param UserVO
      * @return UserVO
      */
-    @Override
     public UserVO create(UserVO userVO) {
+
         var entity = DozerConverter.parseObject(userVO, User.class);
+
+        // Valid not nullable filds
+        if (!validations.validEntity(entity)) {
+            throw new InvalidParams("Invalid values for create entity User!");
+        }
+
         entity.setActive(true);
         entity = addCommomPermission(entity);
-        entity.setPassword(PasswordEncripiting.encript(entity.getPassword()));
+
+        // Cripting password
+        String criptingPassword = PasswordEncripitingBCrypt.encript(entity.getPassword());
+        entity.setPassword(criptingPassword);
 
         // Does not allow creat a user with equals username.
         try {
@@ -106,17 +112,27 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
      * @Param UserVO
      * @return UserVO
      */
-    public UserVO createAdminUser(UserVO object) {
-        var entity = DozerConverter.parseObject(object, User.class);
+    public UserVO createAdminUser(UserVO userVO) {
+
+        var entity = DozerConverter.parseObject(userVO, User.class);
+
+        // Valid not nullable filds
+        if (!validations.validEntity(entity)) {
+            throw new InvalidParams("Invalid values for create entity User!");
+        }
+
         entity.setActive(true);
         entity = addAdminPermission(entity);
-        entity.setPassword(PasswordEncripiting.encript(entity.getPassword()));
+
+        // Cripting password
+        String criptingPassword = PasswordEncripitingBCrypt.encript(entity.getPassword());
+        entity.setPassword(criptingPassword);
 
         // Does not allow creat a user with equals username.
         try {
-            UserVO vo = DozerConverter.parseObject(repository.save(entity), UserVO.class);
-            vo.add(linkTo(methodOn(UserController.class).readById(object.getKey())).withSelfRel());
-            return vo;
+            userVO = DozerConverter.parseObject(repository.save(entity), UserVO.class);
+            userVO.add(linkTo(methodOn(UserController.class).readById(userVO.getKey())).withSelfRel());
+            return userVO;
         } catch (Exception e) {
             throw new ResourceConflitException("Username alread in use!");
         }
@@ -128,22 +144,33 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
      * @Param Long id, UserVO
      * @return UserVO
      */
-    @Override
-    public UserVO update(Long id, UserVO object) {
-        var entity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No records matches for this ID!"));
-        
-        // Check if the update request and a soliciting user is equal.
-        if (! validUserActions.validUpdateAction(entity.getUsername())) {
-            throw new BadCredentialsException("Request to update user other than authenticated!");
+    public UserVO update(Long id, UserVO userVO) {
+        System.out.println("no update user");
+        var entity = DozerConverter.parseObject(userVO, User.class);
+        System.out.println(entity);
+        // Valid not nullable filds
+        if (!validations.validEntity(entity)) {
+            throw new InvalidParams("Invalid values for create entity User!");
         }
         
-        entity.setFullName(object.getFullName());
-        entity.setPassword(PasswordEncripiting.encript(object.getPassword()));
-        
+        System.out.println("no update user em baixo");
+
+        entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No records matches for this ID!"));
+        System.out.println("no update user mais em baixo");
+        System.out.println(entity);
+        // Check if the update request and a soliciting user is equal.
+        if (validations.validUpdateActions(userVO.getuserName())) {
+            throw new BadCredentialsException("Request to update user other than authenticated!");
+        }
+
+        entity.setFullName(userVO.getFullName());
+        String criptingPassword = PasswordEncripitingBCrypt.encript(entity.getPassword());
+        entity.setPassword(criptingPassword);
+
         // Does not allow changes is the username.
         try {
-            var userVO = DozerConverter.parseObject(repository.save(entity), UserVO.class);
+            userVO = DozerConverter.parseObject(repository.save(entity), UserVO.class);
             userVO.add(linkTo(methodOn(UserController.class).readById(userVO.getKey())).withSelfRel());
             return userVO;
         } catch (Exception e) {
@@ -155,36 +182,27 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
     /**
      * Return user actives page in asc order, sort by username.
      * 
-     * @param pageable
+     * @param QueryParams<User>
      * @return Page<UserVO>
      */
-    public Page<UserVO> readAllActives(Pageable pageable) {
+    public Page<UserVO> findAllWithFilterAndPagination(QueryParams<User> queryParams) {
 
-        User user = new User();
-        user.setActive(true);
-
-        // Create a active user Example for search in data base.
-        Example<User> example = Example.of(user, ExampleMatcher.matchingAny());
-        var userPage = repository.findAll(example, pageable);
+        var userPage = repository.findAll(queryParams.createExample(), queryParams.paginationWithSort());
         var userVosPage = userPage.map(p -> DozerConverter.parseObject(p, UserVO.class));
         userVosPage.map(p -> p.add(linkTo(methodOn(UserController.class).readById(p.getKey())).withSelfRel()));
         return userVosPage;
     }
 
     /**
-     * Return user actives list in asc order, sort by username.
+     * Return user actives in asc order, sort by username.
      * 
-     * @param Sort
+     * @param QueryParams<User>
      * @return List<UserVO>
      */
-    public List<UserVO> readAllActives(Sort sort) {
+    public List<UserVO> findAllWithFilter(QueryParams<User> queryParams) {
 
-        User user = new User();
-        user.setActive(true);
-
-        // Create a active user Example for search in data base.
-        Example<User> example = Example.of(user, ExampleMatcher.matchingAny());
-        List<UserVO> users = DozerConverter.parseList(repository.findAll(example, sort), UserVO.class);
+        List<UserVO> users = DozerConverter
+                .parseList(repository.findAll(queryParams.createExample(), queryParams.inOrder()), UserVO.class);
         users.stream()
                 .forEach(p -> p.add(
                         linkTo(methodOn(MovieController.class).readById(p.getKey())).withSelfRel()));
@@ -198,11 +216,12 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
      */
     @Transactional
     public void desactiveCommomUser(Long id) {
-        
+
         var entity = readById(id);
-        
+
         // Check if the update request and a soliciting user is equal.
-        if (! validUserActions.validUpdateAction(entity.getuserName())) {
+
+        if (!validations.validUpdateActions(entity.getuserName())) {
             throw new BadCredentialsException("Request to update user other than authenticated!");
         }
         repository.desactiveCommomUser(id);
@@ -218,18 +237,22 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
      */
     @Transactional
     public ResponseEntity<?> voteForMovie(Long user_id, Long movie_id, Long vote) {
+        //Verify if vote was bettwen 0 and 
+        if (vote < 0 && vote > 4) {
+            throw new ResourceConflitException("Vote value invalid!");
+        }
 
         // Get user from data base by id
         User user = repository.findById(user_id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records users matches for this ID!"));
 
         // Check if user is just a common user.
-        if (validUserActions.isAdminUser(user)) {
+        if (validations.isAdminUser(user)) {
             throw new BadCredentialsException("This solicitation can be just a commom user!");
         }
 
         // Check if the update request and a soliciting user is equal.
-        if (!validUserActions.validUpdateAction(user.getUserName())) {
+        if (!validations.validUpdateActions(user.getUserName())) {
             throw new BadCredentialsException("Request to update user other than authenticated!");
         }
 
@@ -317,12 +340,6 @@ public class UserService extends AbstractService<UserVO> implements UserDetailsS
         };
         user.setPermissions(permissions);
         return user;
-    }
-
-    @Override
-    public void delete(Long id) {
-        // TODO Auto-generated method stub
-
     }
 
 }

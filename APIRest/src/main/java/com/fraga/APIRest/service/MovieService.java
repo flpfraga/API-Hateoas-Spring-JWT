@@ -6,12 +6,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.fraga.APIRest.controller.MovieController;
@@ -20,45 +15,54 @@ import com.fraga.APIRest.data.model.Actor;
 import com.fraga.APIRest.data.model.Movie;
 import com.fraga.APIRest.data.vo.ActorVO;
 import com.fraga.APIRest.data.vo.MovieVO;
+import com.fraga.APIRest.exception.InvalidParams;
 import com.fraga.APIRest.exception.ResourceNotFoundException;
 import com.fraga.APIRest.repository.ActorRepository;
 import com.fraga.APIRest.repository.MovieRepository;
+import com.fraga.APIRest.util.queryManager.QueryParams;
+import com.fraga.APIRest.util.validation.SimpleValidations;
 
 @Service
-public class MovieService extends AbstractService<MovieVO> {
+public class MovieService {
 
     @Autowired
     private MovieRepository repository;
 
     @Autowired
     private ActorRepository actorRepository;
-
-    /**
-     * Return a movie`s page sorted by name or vote Average.
-     * 
-     * @param Pageable
-     * @return Page<MovieVO>
-     */
-    @Override
-    public Page<MovieVO> readAll(Pageable pageable) {
-        var moviePage = repository.findAll(pageable);
-        var movieVOPage = moviePage.map(p -> DozerConverter.parseObject(p, MovieVO.class));
-        movieVOPage.map(p -> p.add(linkTo(methodOn(MovieController.class).readById(p.getKey())).withSelfRel()));
-        return movieVOPage;
-    }
-
+    
+    @Autowired
+    private SimpleValidations<Movie> validations;
+    
+    
     /**
      * Return all movies sorted by name or vote Average.
      * 
      * @param Sort
      * @return List<MovieVO>
      */
-    public List<MovieVO> readAll(Sort sort) {
-        List<MovieVO> movies = DozerConverter.parseList(repository.findAll(sort), MovieVO.class);
+
+    public List<MovieVO> readAllInOrder(QueryParams<Movie> queryParams) {
+        
+        List<MovieVO> movies = DozerConverter.parseList(repository.findAll(queryParams.inOrder()), MovieVO.class);
         movies.stream()
-                .forEach(p -> p.add(
-                        linkTo(methodOn(MovieController.class).readById(p.getKey())).withSelfRel()));
+        .forEach(p -> p.add(
+                linkTo(methodOn(MovieController.class).readById(p.getKey())).withSelfRel()));
         return movies;
+    }
+    /**
+     * Return all movies sorted by name or vote Average. Return pagined.
+     * 
+     * @param Sort
+     * @return List<MovieVO>
+     */
+    
+    public Page<MovieVO> readAllInOrderPagined(QueryParams<Movie> queryParams) {
+        
+        var moviePage = repository.findAll(queryParams.paginationWithSort());
+        var movieVOPage = moviePage.map(p -> DozerConverter.parseObject(p, MovieVO.class));
+        movieVOPage.map(p -> p.add(linkTo(methodOn(MovieController.class).readById(p.getKey())).withSelfRel()));
+        return movieVOPage;
     }
 
     /**
@@ -67,7 +71,6 @@ public class MovieService extends AbstractService<MovieVO> {
      * @param Long
      * @return MovieVO
      */
-    @Override
     public MovieVO readById(Long id) {
         var entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records matches for this ID!"));
@@ -82,16 +85,33 @@ public class MovieService extends AbstractService<MovieVO> {
      * @param MovieVO
      *                return MovieVO
      */
-    @Override
-    public MovieVO create(MovieVO movie) {
-        List<Actor> actors = DozerConverter.parseList(movie.getActors(), Actor.class);
-        var entity = repository.save(DozerConverter.parseObject(movie, Movie.class));
-        actors.forEach(a -> a.setMovie(entity));
-        actors.forEach(actorRepository::save);
+    public MovieVO create(MovieVO movieVO) {
+        
+        var entity = DozerConverter.parseObject(movieVO, Movie.class);
+        
+        //Valid not nullable filds
+        if (!validations.validEntity(entity)) {
+            throw new InvalidParams("Invalid values for create entity Movie!");
+        }
+        
+        //Persist new movie
+        entity = repository.save(entity);
+        
+        //Save actors list for this movie
+        createActors(entity);
+        
         var vo = DozerConverter.parseObject(entity, MovieVO.class);
-        vo.setActors(DozerConverter.parseList(movie.getActors(), ActorVO.class));
-        vo.add(linkTo(methodOn(MovieController.class).readById(movie.getKey())).withSelfRel());
+        vo.setActors(DozerConverter.parseList(movieVO.getActors(), ActorVO.class));
+        vo.add(linkTo(methodOn(MovieController.class).readById(movieVO.getKey())).withSelfRel());
         return vo;
+    }
+    
+    public void createActors( Movie movie) {
+        
+        List<Actor> actors = DozerConverter.parseList(movie.getActors(), Actor.class);
+        actors.forEach(a -> a.setMovie(movie));
+        actors.forEach(actorRepository::save);
+        
     }
 
     /**
@@ -99,9 +119,8 @@ public class MovieService extends AbstractService<MovieVO> {
      * 
      * @param Long
      */
-    @Override
     public void delete(Long id) {
-        var entity = readById(id);
+        readById(id);
         repository.deleteById(id);
     }
 
@@ -111,20 +130,26 @@ public class MovieService extends AbstractService<MovieVO> {
      * @param MovieVO
      *                return MovieVO
      */
-    @Override
-    public MovieVO update(Long id, MovieVO movie) {
+    public MovieVO update(Long id, MovieVO movieVO) {
+        
+        var entity = DozerConverter.parseObject(movieVO, Movie.class);
+        
+      //Valid not nullable filds
+        if (!validations.validEntity(entity)) {
+            throw new InvalidParams("Invalid values for create entity Movie!");
+        }
+        
         var vo = readById(id);
-        List<Actor> actors = DozerConverter.parseList(movie.getActors(), Actor.class);
-        vo.setTitle(movie.getTitle());
-        vo.setDirector(movie.getDirector());
-        vo.setGenre(movie.getGenre());
-        vo.setVoteCount(movie.getVoteCount());
-        vo.setVoteAverage(movie.getVoteAverage());
-        var entity = repository.save(DozerConverter.parseObject(vo, Movie.class));
-        actors.forEach(a -> a.setMovie(entity));
-        actors.forEach(actorRepository::save);
+
+        vo.setTitle(movieVO.getTitle());
+        vo.setDirector(movieVO.getDirector());
+        vo.setGenre(movieVO.getGenre());
+        vo.setVoteCount(movieVO.getVoteCount());
+        vo.setVoteAverage(movieVO.getVoteAverage());
+        entity = repository.save(DozerConverter.parseObject(vo, Movie.class));
+        
         vo = DozerConverter.parseObject(entity, MovieVO.class);
-        vo.add(linkTo(methodOn(MovieController.class).readById(movie.getKey())).withSelfRel());
+        vo.add(linkTo(methodOn(MovieController.class).readById(movieVO.getKey())).withSelfRel());
         return vo;
     }
 
@@ -134,16 +159,14 @@ public class MovieService extends AbstractService<MovieVO> {
      * @param movieVO
      * @return
      */
-    public Page<MovieVO> findAllWithFilter(MovieVO movieVO, Pageable pageable) {
-        var entity = DozerConverter.parseObject(movieVO, Movie.class);
+    public Page<MovieVO> findAllWithFilterAndPagination(QueryParams<Movie> queryParams) {
 
-        // Create a example matcher for search in data base
-        ExampleMatcher matcher = ExampleMatcher.matchingAny().withStringMatcher(StringMatcher.CONTAINING);
-        Example<Movie> example = Example.of(entity, matcher);
+        var moviePage = repository.findAll(queryParams.createExample(), queryParams.pagination());
 
-        var moviePage = repository.findAll(example, pageable);
         var movieVosPage = moviePage.map(p -> DozerConverter.parseObject(p, MovieVO.class));
+
         movieVosPage.map(p -> p.add(linkTo(methodOn(MovieController.class).readById(p.getKey())).withSelfRel()));
+
         return movieVosPage;
     }
 
@@ -153,13 +176,9 @@ public class MovieService extends AbstractService<MovieVO> {
      * @param movieVO
      * @return
      */
-    public List<MovieVO> findAllWithFilter(MovieVO movieVO) {
-        var entity = DozerConverter.parseObject(movieVO, Movie.class);
+    public List<MovieVO> findAllWithFilter(QueryParams<Movie> queryParams) {
 
-        // Create a example matcher for search in data base
-        ExampleMatcher matcher = ExampleMatcher.matchingAny().withStringMatcher(StringMatcher.CONTAINING);
-        Example<Movie> example = Example.of(entity, matcher);
-        List<MovieVO> movies = DozerConverter.parseList(repository.findAll(example), MovieVO.class);
+        List<MovieVO> movies = DozerConverter.parseList(repository.findAll(queryParams.createExample()), MovieVO.class);
         movies.stream()
                 .forEach(p -> p.add(
                         linkTo(methodOn(MovieController.class).readById(p.getKey())).withSelfRel()));
