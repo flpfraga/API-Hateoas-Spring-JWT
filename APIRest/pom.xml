@@ -13,7 +13,7 @@
 	<artifactId>APIRest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Desafio-Ioasys-APIRest</name>
-	<description>Projeto desenvolvido como desafio proposto pela Ioasys para vaga de desenvolvedor BackEnd Java</description>
+	<description>API com endpoonts para gerenciar usuários e filmes</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

@@ -145,20 +145,16 @@ public class UserService implements UserDetailsService {
      * @return UserVO
      */
     public UserVO update(Long id, UserVO userVO) {
-        System.out.println("no update user");
         var entity = DozerConverter.parseObject(userVO, User.class);
-        System.out.println(entity);
+
         // Valid not nullable filds
         if (!validations.validEntity(entity)) {
             throw new InvalidParams("Invalid values for create entity User!");
         }
         
-        System.out.println("no update user em baixo");
-
         entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records matches for this ID!"));
-        System.out.println("no update user mais em baixo");
-        System.out.println(entity);
+
         // Check if the update request and a soliciting user is equal.
         if (validations.validUpdateActions(userVO.getuserName())) {
             throw new BadCredentialsException("Request to update user other than authenticated!");

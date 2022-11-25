@@ -40,10 +40,7 @@ public class AuthController {
         var username = data.getUsername();
         var password = data.getPassword();
         try {
-            System.out.println("password invalido username controller " + username + " pass " + password);
             authenticaionManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            
-            System.out.println("autenticou no controller");
         }  catch (Exception e) {
             throw new BadCredentialsException("Invalid username password supplied!");
         }

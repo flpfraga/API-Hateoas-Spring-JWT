@@ -33,7 +33,6 @@ public class AuthService  {
     }
     public void authenticate(String username, String password) {
         try {
-            System.out.println("password invalido username " + username + " pass " + password);
             authenticaionManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         }  catch (Exception e) {
             throw new BadCredentialsException("Invalid username password supplied!");
