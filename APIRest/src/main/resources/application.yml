@@ -1,16 +1,11 @@
 cors:
   originPatterns: https://www.imdb.com/
-
-file:
-  upload-dir: /Code/uploadDir
   
 security:
   jwt:
     token:
       secret-key: 53cr37
       expire-length: 3600000
-
-
 
 spring:
   datasource:
