@@ -51,3 +51,5 @@ Comnado para container (docker). Na pasta ./empresa-java: docker compose up -d -
 
 [![Docker Hub Repo](https://img.shields.io/docker/pulls/felipefragaff
 /ioasys-api.svg)](https://hub.docker.com/repository/docker/felipefragaff/ioasys-api)
+
+GitHub Actions de continuous integrations
