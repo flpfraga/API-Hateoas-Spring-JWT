@@ -47,5 +47,7 @@ Consultas de filmes:
 	Filmes filtrados pelo nome: GET/api/movie/v1/title - deverá ser informado parâmetros da busca e opção de paginação que ocorrerá caso seja passado o parâmetro page	
 	Filmes filtrados pelo genero: GET/api/movie/v1/genre - deverá ser informado parâmetros da busca e opção de paginação que ocorrerá caso seja passado o parâmetro page
 
-Para uso de container (docker), digite o no terminal de comando, estando na pasta ./empresa-java: docker compose up -d --build
+Comnado para container (docker). Na pasta ./empresa-java: docker compose up -d --build
 
+[![Docker Hub Repo](https://img.shields.io/docker/pulls/felipefragaff
+/ioasys-api.svg)](https://hub.docker.com/repository/docker/felipefragaff/ioasys-api)
