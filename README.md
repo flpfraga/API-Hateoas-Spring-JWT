@@ -1,63 +1,51 @@
-# Desafio Pessoa Desenvolvedora Java
+API Java desenvolvida com Spring Boot que gerencia endpoints para filmes e usuários.
 
-## 🏗 O que fazer?
+Versão:
+  Java: 17
+  Spring Boot: 2.7.4
 
-- Você deve realizar um *fork* deste repositório e, ao finalizar, enviar o link do seu repositório para a nossa equipe. Lembre-se, **NÃO** é necessário criar um *Pull Request* para isso, nós iremos avaliar e retornar por e-mail o resultado do teste
+Descrição:
 
-# 🚨 Requisitos
+Este sistema é uma API padrão RestFull Hateoas que gerencia endpoints para fornecer ao um usuário um catálogo de filmes por arquivo JSON. Gerencia também usuários com permissões
+administrativas e comuns, validando as chamadas desses usuários através de autenticação.
 
-- A API deve ser construída em Java (8 ou superior) utilizando Spring Framework (2.2 ou superior)
-- Implementar autenticação seguindo o padrão ***JWT***, lembrando que o token a ser recebido deve estar no formado ***Bearer***
-- Implementar operações no banco de dados utilizando ***Spring Data JPA*** & ***Hibernate***
-- **Bancos relacionais permitidos**
-    - *MySQL* (prioritariamente)
-    - *PostgreSQL*
-- As entidades deversão ser criadas como tabelas utilizando a ferramenta de migração **Flyway**. Portanto, os scripts de **migrations** para geração das tabelas devem ser enviados no teste
-- Sua API deverá seguir os padrões REST na construção das rotas e retornos
-- Sua API deverá conter documentação viva utilizando a *OpenAPI Specification* (**Swagger**)
-- Caso haja alguma particularidade de implementação, instruções para execução do projeto deverão ser enviadas
+Tecnologias:
 
-# 🎁 Extra
+Java;
+Spring Boot
+Spring Data JPA & Hibernate
+Spring Security com autenticação JWT e token Auth0 no formado Bearer
+Banco de dados MySql
+Model Maper para conversão de entidades
+Migrations com Flyway
+OpenAPI com Swagger
+Container com Docker
+Princípios do SOLID
 
-- Testes unitários
-- Teste de integração da API em linguagem de sua preferência (damos importância para pirâmide de testes)
-- Cobertura de testes utilizando Sonarqube
-- Utilização de *Docker* (enviar todos os arquivos e instruções necessárias para execução do projeto)
+Funcionamento:
+Autenticação:
+	Autenticar usuário cadastrado e gerar token formato Bearer: POST/api/auth/v1 - passar em formato JSON parametro "userName" e "password"
 
-# 🕵🏻‍♂️ Itens a serem avaliados
+Usuário comum:
+	Cadastro de usuário novo: POST/api/user/v1 - passar em formato JSON parametro "userName", "password" e "fullName" (fullName opcional)
+	Update de usuário: PUT/api/user/v1/{id} - passar em formato JSON parametro "userName", "password" e "fullName" (fullName opcional)
+	Desativar usuário (exclusão lógica): PATCH/api/user/v1/desable{id}
+	Adicionar Voto para um filme: PATCH/api/user/v1/vote/{id} - informar parâmetro movie_id e vote
 
-- Estrutura do projeto
-- Utilização de código limpo e princípios **SOLID**
-- Segurança da API, como autenticação, senhas salvas no banco, *SQL Injection* e outros
-- Boas práticas da Linguagem/Framework
-- Seu projeto deverá seguir tudo o que foi exigido na seção  [O que desenvolver?](##--o-que-desenvolver)
+Usuário Administrativo:
+	Buscar todos usuários ativos: GET/api/admin/v1/users_active
+	Cadastro de usuário novo: POST/api/admin/v1 - passar em formato JSON parametro "userName", "password" e "fullName" (fullName opcional)
+	Update de usuário: PUT/api/admin/v1/{id} - passar em formato JSON parametro "userName", "password" e "fullName" (fullName opcional)
+	Desativar usuário (exclusão lógica): PATCH/api/admin/v1/desable/{id}
+	Criar um novo filme: POST/api/admin/v1/movie - passar em formato JSON parametro "title", "directo", "genre", "details", "actor"[]
+	Update de filme: PUT/api/admin/v1/movie/id/{id} - passar em formato JSON parametro "title", "directo", "genre", "details", "actor"[]
 
-# 🖥 O que desenvolver?
+Consultas de filmes:
+	Todos filmes ordenado pelo nome: GET/api/movie/v1 - opção de paginação que ocorrerá caso seja passado o parâmetro page
+	Todos filmes ordenado pelo nota: GET/api/movie/v1/top_rated - opção de paginação que ocorrerá caso seja passado o parâmetro page
+	Filmes filtrados pelo diretor: GET/api/movie/v1/director - deverá ser informado parâmetros da busca e opção de paginação que ocorrerá caso seja passado o parâmetro page
+	Filmes filtrados pelo nome: GET/api/movie/v1/title - deverá ser informado parâmetros da busca e opção de paginação que ocorrerá caso seja passado o parâmetro page	
+	Filmes filtrados pelo genero: GET/api/movie/v1/genre - deverá ser informado parâmetros da busca e opção de paginação que ocorrerá caso seja passado o parâmetro page
 
-Você deverá criar uma API que o site [IMDb](https://www.imdb.com/) irá consultar para exibir seu conteúdo, sua API deverá conter as seguintes funcionalidades:
+Para uso de container (docker), digite o no terminal de comando, estando na pasta ./empresa-java: docker compose up -d --build
 
-- Administrador
-    - Cadastro
-    - Edição
-    - Exclusão lógica (desativação)
-    - Listagem de usuários não administradores ativos
-        - Opção de trazer registros paginados
-        - Retornar usuários por ordem alfabética
-- Usuário
-    - Cadastro
-    - Edição
-    - Exclusão lógica (desativação)
-- Filmes
-    - Cadastro (somente um usuário administrador poderá realizar esse cadastro)
-    - Voto (a contagem de votos será feita por usuário de 0-4 que indica quanto o usuário gostou do filme)
-    - Listagem
-        - Opção de filtros por diretor, nome, gênero e/ou atores
-        - Opção de trazer registros paginados
-        - Retornar a lista ordenada por filmes mais votados e por ordem alfabética
-    - Detalhes do filme trazendo todas as informações sobre o filme, inclusive a média dos votos
-
-**Obs.:** 
-
-**Apenas os usuários poderão votar nos filmes e a API deverá validar quem é o usuário que está acessando, ou seja, se é um usuário administrador ou não.**
-
-**Caso não consiga concluir todos os itens propostos, é importante que nos envie a implementação até onde foi possível para que possamos avaliar**
