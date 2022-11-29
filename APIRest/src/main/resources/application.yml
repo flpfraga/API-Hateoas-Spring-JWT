@@ -2,7 +2,7 @@ cors:
   originPatterns: https://www.imdb.com/
 
 file:
-  upload-dir: /uploadDir
+  upload-dir: /home/runner/work/API-Hateoas-Spring-JWT/Code/uploadDir
   
 security:
   jwt:
