@@ -37,7 +37,7 @@ jobs:
         
     - name: Build Aplicattion JAR
       working-directory: ./APIRest
-      run: mvn clean package
+      run: mvn clean package -Dskip test
       
 
     - name: Docker Compose Build
