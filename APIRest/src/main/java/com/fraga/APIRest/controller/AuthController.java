@@ -21,30 +21,36 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "AuthenticationEndpoint", description = "Authentication for API")
 public class AuthController {
 
-    @Autowired
-    private AuthService service;
+
+    private final AuthService authService;
 
     @Autowired
     private AuthenticationManager authenticaionManager;
-    
-    
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+
     /**
      * Verify if a user is registry and authentication him. Create a Bearer token for this user.
      * @param data
      * @return TokenVO
      */
     @Operation(summary = "Authenticates a user and returns a token", tags = {"AuthenticationEndpoint" })
+
     @PostMapping(value = "/signin", produces = { "application/json", "application/xml",
             "application/x-yaml" }, consumes = { "application/json", "application/xml", "application/x-yaml" })
+
     public ResponseEntity<?> signin(@RequestBody AccountCredentialsVO data) {
         var username = data.getUsername();
         var password = data.getPassword();
         try {
-            authenticaionManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            authService.authenticate(username, password);
         }  catch (Exception e) {
             throw new BadCredentialsException("Invalid username password supplied!");
         }
-        return ResponseEntity.ok(service.access(username, password));
+        return ResponseEntity.ok(authService.access(username, password));
 
     }
 }

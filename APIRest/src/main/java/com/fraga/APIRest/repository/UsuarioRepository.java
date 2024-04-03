@@ -9,19 +9,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.fraga.APIRest.data.model.User;
+import com.fraga.APIRest.data.model.Usuario;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 	
-	@Query("SELECT u FROM User u WHERE u.active = true ORDER BY u.active")
-	List<User> loadUserActives(Pageable pageable);
+	@Query("SELECT u FROM Usuario u WHERE u.active = true ORDER BY u.active")
+	List<Usuario> loadUserActives(Pageable pageable);
 	
-	@Query("SELECT u FROM User u WHERE u.userName =:userName")
-	User loadUserByUsername(@Param("userName") String userName);
+	@Query("SELECT u FROM Usuario u WHERE u.nome_usuario =:userName")
+	Usuario loadUserByUsername(@Param("userName") String userName);
 	
 	@Modifying
-	@Query("UPDATE User u Set u.active = false WHERE u.id =:id")
+	@Query("UPDATE Usuario u Set u.active = false WHERE u.id =:id")
 	void desactiveCommomUser(@Param("id") Long id);
 	
 	

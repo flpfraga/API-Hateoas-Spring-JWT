@@ -5,11 +5,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.fraga.APIRest.data.model.User;
+import com.fraga.APIRest.data.model.Usuario;
 import com.fraga.APIRest.exception.InvalidParams;
 
 @Component
-public class ValidationsUser implements SecurityValidations<User> {
+public class ValidationsUser implements SecurityValidations<Usuario> {
 
 
     /**
@@ -46,19 +46,19 @@ public class ValidationsUser implements SecurityValidations<User> {
     }
 
     @Override
-    public boolean validEntity(User entity) {
+    public boolean validEntity(Usuario entity) {
         
-        
-        if (entity.getUserName().equals(null) || entity.getUserName().equals(""))
-            return false;
-        if (entity.getPassword().equals(null) || entity.getPassword().equals(""))
-            throw new InvalidParams("Password can`t be null!");
+//
+//        if (entity.getUserName().equals(null) || entity.getUserName().equals(""))
+//            return false;
+//        if (entity.getPassword().equals(null) || entity.getPassword().equals(""))
+//            throw new InvalidParams("Password can`t be null!");
         return true;
     }
    
 
     @Override
-    public boolean isAdminUser(User entity) {
+    public boolean isAdminUser(Usuario entity) {
         
         for (GrantedAuthority g : entity.getPermissions()) {
             if (g.equals("ADMIN"))

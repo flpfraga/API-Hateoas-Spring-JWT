@@ -3,8 +3,6 @@ package com.fraga.APIRest.data.vo;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.fraga.APIRest.data.model.Movie;
-
 public class ActorVO implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -9,16 +9,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 
-import com.fraga.APIRest.data.model.User;
+import com.fraga.APIRest.data.model.Usuario;
 
 @Component
-public class QueryParamsUser implements QueryParams<User>  {
+public class QueryParamsUser implements QueryParams<Usuario>  {
     
     private Integer page;
     
     private Integer size;
     
-    private User entity;
+    private Usuario entity;
     
     private String orderParam = "";
     
@@ -52,12 +52,12 @@ public class QueryParamsUser implements QueryParams<User>  {
     }
 
     @Override
-    public User getEntity() {
+    public Usuario getEntity() {
         return entity;
     }
 
     @Override
-    public void setEntity(User entity) {
+    public void setEntity(Usuario entity) {
 
        this.entity = entity;
     }
@@ -88,9 +88,9 @@ public class QueryParamsUser implements QueryParams<User>  {
     }
     
     @Override
-    public Example<User> createExample() {
+    public Example<Usuario> createExample() {
         ExampleMatcher matcher = ExampleMatcher.matchingAny().withStringMatcher(StringMatcher.CONTAINING);
-        Example<User> example = Example.of(entity, matcher);
+        Example<Usuario> example = Example.of(entity, matcher);
         return example;
     }
 

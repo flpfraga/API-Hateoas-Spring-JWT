@@ -1,24 +1,18 @@
 package com.fraga.APIRest.data.vo;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 import org.springframework.hateoas.RepresentationModel;
 
-import com.github.dozermapper.core.Mapping;
+import java.io.Serializable;
+import java.util.Objects;
 
 public class UserVO extends RepresentationModel <UserVO> implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	@Mapping("id")
 	private Long key; 
 	private String userName;
-	
 	private String fullName;
-	
 	private String password;
-	
 	private Boolean active;
 	
 	public UserVO() {

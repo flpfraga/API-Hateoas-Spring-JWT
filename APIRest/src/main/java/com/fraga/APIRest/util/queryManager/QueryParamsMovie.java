@@ -9,16 +9,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 
-import com.fraga.APIRest.data.model.Movie;
+import com.fraga.APIRest.data.model.Filme;
 
 @Component
-public class QueryParamsMovie implements QueryParams<Movie>  {
+public class QueryParamsMovie implements QueryParams<Filme>  {
     
     private Integer page;
     
     private Integer size;
     
-    private Movie entity;
+    private Filme entity;
     
     private String orderParam = "";
     
@@ -52,12 +52,12 @@ public class QueryParamsMovie implements QueryParams<Movie>  {
     }
 
     @Override
-    public Movie getEntity() {
+    public Filme getEntity() {
         return entity;
     }
 
     @Override
-    public void setEntity(Movie entity) {
+    public void setEntity(Filme entity) {
 
        this.entity = entity;
     }
@@ -88,9 +88,9 @@ public class QueryParamsMovie implements QueryParams<Movie>  {
     }
     
     @Override
-    public Example<Movie> createExample() {
+    public Example<Filme> createExample() {
         ExampleMatcher matcher = ExampleMatcher.matchingAny().withStringMatcher(StringMatcher.CONTAINING);
-        Example<Movie> example = Example.of(entity, matcher);
+        Example<Filme> example = Example.of(entity, matcher);
         return example;
     }
 

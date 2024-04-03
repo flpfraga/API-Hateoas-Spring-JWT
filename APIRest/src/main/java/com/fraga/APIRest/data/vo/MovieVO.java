@@ -6,14 +6,11 @@ import java.util.Objects;
 
 import org.springframework.hateoas.RepresentationModel;
 
-import com.fraga.APIRest.data.model.Actor;
-import com.github.dozermapper.core.Mapping;
 
 public class MovieVO extends RepresentationModel <MovieVO> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	@Mapping("id")
 	private Long key;
 
 	private String title;
