@@ -3,12 +3,16 @@ package com.fraga.APIRest.service.impl;
 import com.fraga.APIRest.data.model.Permission;
 import com.fraga.APIRest.data.model.Usuario;
 import com.fraga.APIRest.data.vo.UserVO;
+import com.fraga.APIRest.dto.UsuarioRequestDTO;
 import com.fraga.APIRest.exception.BadCredentialsException;
+import com.fraga.APIRest.exception.InvalidParams;
 import com.fraga.APIRest.repository.FilmeRepository;
 import com.fraga.APIRest.repository.UsuarioRepository;
-import com.fraga.APIRest.service.UserService;
+import com.fraga.APIRest.security.cripting.PasswordEncripitingBCrypt;
+import com.fraga.APIRest.service.UsuarioService;
 import com.fraga.APIRest.util.queryManager.QueryParams;
 import com.fraga.APIRest.util.validation.SecurityValidations;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,19 +21,26 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final FilmeRepository filmeRepository;
     private final SecurityValidations<Usuario> validations;
+    private final ModelMapper mapper;
 
-    public UserServiceImpl(UsuarioRepository repository, FilmeRepository filmeRepository, SecurityValidations<Usuario> validations) {
+    public UsuarioServiceImpl(UsuarioRepository repository,
+                              FilmeRepository filmeRepository,
+                              SecurityValidations<Usuario> validations,
+                              ModelMapper mapper) {
         this.usuarioRepository = repository;
         this.filmeRepository = filmeRepository;
         this.validations = validations;
+        this.mapper = mapper;
     }
 
 //    public Page<UserVO> readAll(QueryParams<Usuario> queryParams) {
@@ -80,9 +91,9 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Create a new admin user. Access just for admin users.
-     * 
-     * @Param UserVO
+     *
      * @return UserVO
+     * @Param UserVO
      */
 //    public UserVO createAdminUser(UserVO userVO) {
 //
@@ -109,7 +120,6 @@ public class UserServiceImpl implements UserService {
 //            throw new ResourceConflitException("Username alread in use!");
 //        }
 //    }
-
     @Override
     public Page<UserVO> readAll(QueryParams<Usuario> queryParams) {
         return null;
@@ -121,9 +131,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVO create(UserVO userVO) {
-        return null;
+    public void criarNovoUsuario(UsuarioRequestDTO usuarioRequestDTO) {
+        if (Objects.isNull(buscarUsuarioPorNome(usuarioRequestDTO.getNomeUsuario(), false))){
+            Usuario usuario = mapper.map(usuarioRequestDTO, Usuario.class);
+            adicionarPermissaoUsuarioComum(usuario);
+            usuario.setSenha(encriptografarSenha(usuario.getSenha()));
+            usuarioRepository.save(usuario);
+        }
+        else{
+            throw new InvalidParams("Nome do usuário informado já cadastrado.");
+        }
     }
+
+    private Usuario buscarUsuarioPorNome(String nomeUsuario, Boolean isTrowable) {
+        return usuarioRepository.buscarPorNomeUsuario(nomeUsuario).orElseGet(
+                () -> {
+                    if (Boolean.TRUE.equals(isTrowable)) {
+                        throw new BadCredentialsException("Usuário não encontrado");
+                    }
+                    return null;
+                }
+        );
+    }
+
+    private void adicionarPermissaoUsuarioComum(Usuario usuario){
+        usuario.setPermissions(Arrays.asList(new Permission(2, "COMMON_USER")));
+    }
+
+    private String encriptografarSenha(String senha){
+        return PasswordEncripitingBCrypt.encript(senha);
+    }
+
 
     @Override
     public UserVO createAdminUser(UserVO userVO) {
@@ -147,9 +185,9 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Update a save user.
-     * 
-     * @Param Long id, UserVO
+     *
      * @return UserVO
+     * @Param Long id, UserVO
      */
 //    public UserVO update(Long id, UserVO userVO) {
 //        var entity = DozerConverter.parseObject(userVO, Usuario.class);
@@ -199,7 +237,6 @@ public class UserServiceImpl implements UserService {
 //                        linkTo(methodOn(FilmesController.class).readById(p.getKey())).withSelfRel()));
 //        return users;
 //    }
-
     @Transactional
     public void desactiveCommomUser(Long id) {
 

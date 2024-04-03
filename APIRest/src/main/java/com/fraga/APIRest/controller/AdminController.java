@@ -1,30 +1,14 @@
 package com.fraga.APIRest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fraga.APIRest.data.model.Usuario;
-import com.fraga.APIRest.data.vo.MovieVO;
-import com.fraga.APIRest.data.vo.UserVO;
-import com.fraga.APIRest.exception.InvalidParams;
 import com.fraga.APIRest.service.impl.FilmeServiceImpl;
-import com.fraga.APIRest.service.UserService;
+import com.fraga.APIRest.service.UsuarioService;
 import com.fraga.APIRest.util.queryManager.QueryParams;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -34,7 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class AdminController {
 
     @Autowired
-    private UserService userService;
+    private UsuarioService userService;
 
     @Autowired
     private FilmeServiceImpl movieService;

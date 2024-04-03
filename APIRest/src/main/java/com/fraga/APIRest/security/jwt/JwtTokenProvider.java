@@ -21,7 +21,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fraga.APIRest.exception.InvalidJwtAuthenticationException;
-import com.fraga.APIRest.security.TokenVO;
+import com.fraga.APIRest.security.Token;
 
 @Service
 public class JwtTokenProvider {
@@ -43,12 +43,12 @@ public class JwtTokenProvider {
 		algorithm = Algorithm.HMAC256(secretKey.getBytes());
 	}
 
-	public TokenVO createAccessToken(String username, List<String> roles) {
+	public Token createAccessToken(String username, List<String> roles) {
 		Date now = new Date();
 		Date valid = new Date(now.getTime() + validityInMilliseconds);
 		var accessToken = getAccessToken(username, roles, now, valid);
 		var refreshToken = getRefreshToken(username, roles, now);
-		return new TokenVO(username, true, now, valid, accessToken, refreshToken);
+		return new Token(username, true, now, valid, accessToken, refreshToken);
 	}
 
 	private String getAccessToken(String username, List<String> roles, Date now, Date valid) {

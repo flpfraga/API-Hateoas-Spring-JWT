@@ -1,10 +1,13 @@
 package com.fraga.APIRest.security;
 
+import com.fraga.APIRest.data.model.Permission;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-public class TokenVO implements Serializable {
+public class Token implements Serializable {
 
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -15,13 +18,14 @@ public class TokenVO implements Serializable {
 	private Date expiration;
 	private String  accessToken;
 	private String  refreshToken;
+	private List<String> permissoes;
 	
-	public TokenVO() {
+	public Token() {
 		
 	}
 
-	public TokenVO(String username, boolean aunthenticated, Date created, Date expiration, String accessToken,
-			String refreshToken) {
+	public Token(String username, boolean aunthenticated, Date created, Date expiration, String accessToken,
+				 String refreshToken) {
 		super();
 		this.username = username;
 		this.aunthenticated = aunthenticated;
@@ -77,5 +81,13 @@ public class TokenVO implements Serializable {
 
 	public void setRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
+	}
+
+	public List<String> getPermissoes() {
+		return permissoes;
+	}
+
+	public void setPermissoes(List<String> permissoes) {
+		this.permissoes = permissoes;
 	}
 }

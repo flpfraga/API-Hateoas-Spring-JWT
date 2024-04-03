@@ -1,8 +1,11 @@
 package com.fraga.APIRest.service.impl;
 
+import com.fraga.APIRest.data.model.Permission;
+import com.fraga.APIRest.data.model.Usuario;
 import com.fraga.APIRest.exception.BadCredentialsException;
 import com.fraga.APIRest.repository.UsuarioRepository;
-import com.fraga.APIRest.security.TokenVO;
+import com.fraga.APIRest.security.AccountCredentialsRequest;
+import com.fraga.APIRest.security.Token;
 import com.fraga.APIRest.security.jwt.JwtTokenProvider;
 import com.fraga.APIRest.service.AuthService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,28 +13,31 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final UsuarioRepository repository;
+    private final UsuarioRepository usuarioRepository;
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManager authenticaionManager;
 
-    public AuthServiceImpl(UsuarioRepository repository, JwtTokenProvider tokenProvider, AuthenticationManager authenticaionManager) {
-        this.repository = repository;
+    public AuthServiceImpl(UsuarioRepository usuarioRepository, JwtTokenProvider tokenProvider, AuthenticationManager authenticaionManager) {
+        this.usuarioRepository = usuarioRepository;
         this.tokenProvider = tokenProvider;
         this.authenticaionManager = authenticaionManager;
     }
 
+    @Override
+    public Token autenticar(AccountCredentialsRequest accountCredentialsRequest) {
+        String username = accountCredentialsRequest.getUsername();
+        String password = accountCredentialsRequest.getPassword();
 
-    public Object access(String username, String password) {
-        authenticate(username, password);
-        return createToken(username);
+        validarUsuario(username, password);
+
+        return gerarToken(username);
     }
-    public void authenticate(String username, String password) {
+    private void validarUsuario(String username, String password) {
         try {
             authenticaionManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         }  catch (Exception e) {
@@ -39,19 +45,19 @@ public class AuthServiceImpl implements AuthService {
         }
     }
     
-    public TokenVO createToken(String username) {
-        var user = repository.loadUserByUsername(username);
-        var token = new TokenVO();
-        if (user != null) {
-            token = tokenProvider.createAccessToken(username, user.getRoles());
+    private Token gerarToken(String username) {
+        Optional<Usuario> usuario = usuarioRepository.buscarPorNomeUsuario(username);
+
+        if(usuario.isPresent()){
+            Token token;
+            token = tokenProvider.createAccessToken(username, usuario.get().getRoles());
+            token.setPermissoes(usuario.get().getPermissions().stream()
+                    .map(Permission::getDescription).toList());
+            return token;
         } else {
             throw new UsernameNotFoundException("Username " + username + " not found!");
         }
-        
-        Map<Object, Object> model = new HashMap<>();
-        model.put("username", username);
-        model.put("token", token);
-        return token;
+
     }
 
 }
