@@ -158,7 +158,7 @@ public class FilmeServiceImpl implements FilmeService {
         Optional<Filme> filme = filmeRepository.findById(id);
 
         if(filme.isPresent()){
-            return mapper.map(filme, FilmeResponseDTO.class);
+            return mapper.map(filme.get(), FilmeResponseDTO.class);
         }
         throw new ResourceNotFoundException("Não foi encontrado filmes com o id informado.");
     }

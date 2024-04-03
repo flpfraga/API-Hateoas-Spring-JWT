@@ -13,7 +13,7 @@ public class Filme implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column
 	private Long id;
 
 	@Column(nullable = false)
@@ -25,7 +25,7 @@ public class Filme implements Serializable {
 
 	private Double mediaVotos;
 
-	private Long contageVotos;
+	private Long contagemVotos;
 
 	private String detalhes;
 
@@ -34,8 +34,8 @@ public class Filme implements Serializable {
 			@JoinColumn(name = "id_ator") })
 	private List<Ator> atores;
 
+
 	public Filme() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public Long getId() {
@@ -78,12 +78,12 @@ public class Filme implements Serializable {
 		this.mediaVotos = mediaVotos;
 	}
 
-	public Long getContageVotos() {
-		return contageVotos;
+	public Long getContagemVotos() {
+		return contagemVotos;
 	}
 
-	public void setContageVotos(Long contageVotos) {
-		this.contageVotos = contageVotos;
+	public void setContagemVotos(Long contagemVotos) {
+		this.contagemVotos = contagemVotos;
 	}
 
 	public String getDetalhes() {
@@ -100,5 +100,8 @@ public class Filme implements Serializable {
 
 	public void setAtores(List<Ator> atores) {
 		this.atores = atores;
+	}
+	public List<String> getAtoresNome(){
+		return atores.stream().map(Ator::getNome).toList();
 	}
 }

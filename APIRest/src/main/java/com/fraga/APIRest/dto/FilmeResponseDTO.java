@@ -8,7 +8,7 @@ public class FilmeResponseDTO {
     private String diretor;
     private String genero;
     private String detalhes;
-    private List< Long> atores;
+    private List<String> atores;
 
     public FilmeResponseDTO() {
     }
@@ -45,11 +45,11 @@ public class FilmeResponseDTO {
         this.detalhes = detalhes;
     }
 
-    public List<Long> getAtores() {
+    public List<String> getAtores() {
         return atores;
     }
 
-    public void setAtores(List<Long> atores) {
+    public void setAtores(List<String> atores) {
         this.atores = atores;
     }
 }

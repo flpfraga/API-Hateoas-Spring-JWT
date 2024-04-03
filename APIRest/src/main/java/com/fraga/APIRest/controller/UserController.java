@@ -1,6 +1,9 @@
 package com.fraga.APIRest.controller;
 
+import com.fraga.APIRest.dto.UsuarioAtualizarDTO;
 import com.fraga.APIRest.dto.UsuarioRequestDTO;
+import com.fraga.APIRest.dto.UsuarioResponseDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import javax.validation.Valid;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users/v1")
 @Tag(name = "Users", description = "EndPoints for Managing Users")
@@ -33,28 +39,64 @@ public class UserController {
     }
 
     /**
-     * Get a specific user by id number.
-     * Path variable index the user to be returned!
+     * Buscar todos usuários paginados
      *
-     * @param Long id
-     * @return UserVO
+     * @param pagina  com número da página a ser buscada
+     * @param tamanho com número de objetos em cada página
+     * @return Page<UsuarioResponseDTO>
      */
-    @GetMapping("/usuario/{id}")
-    @Operation(summary = "Finds a user", description = "Finds a user by id", tags = {"Users"}, responses = {
+    @GetMapping("/usuarios")
+    @Operation(summary = "Buscar usuário pelo ID", description = "Buscar usuário pelo ID", tags = {"Users"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
             @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-    public ResponseEntity<UserVO> buscarUsuarioPorId(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(usuarioService.readById(id));
+    public ResponseEntity<Page<UsuarioResponseDTO>> buscarTodosUsuarios(@RequestParam("page") Integer pagina,
+                                                                        @RequestParam("size") Integer tamanho) {
+
+        return ResponseEntity.ok(usuarioService.buscarTodosUsuarios(pagina, tamanho));
+    }
+
+    /**
+     * Buscar um usuário pelo número do ID
+     *
+     * @param id com identificador de um usuário que se deseja buscar
+     * @return UsuarioResponseDTO
+     */
+    @GetMapping("/usuario/{id}")
+    @Operation(summary = "Buscar usuário pelo ID", description = "Buscar usuário pelo ID", tags = {"Users"}, responses = {
+            @ApiResponse(description = "Success", responseCode = "200", content = @Content),
+            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
+            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
+    public ResponseEntity<UsuarioResponseDTO> buscarUsuarioPorId(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id));
+    }
+
+    /**
+     * Buscar um usuário pelo nome do usuário
+     *
+     * @param nomeUsuario com nome do usuário a ser buscado
+     * @return UsuarioResponseDTO
+     */
+    @GetMapping("/usuario-por-nome")
+    @Operation(summary = "Buscar usuário pelo ID", description = "Buscar usuário pelo ID", tags = {"Users"}, responses = {
+            @ApiResponse(description = "Success", responseCode = "200", content = @Content),
+            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
+            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
+    public ResponseEntity<UsuarioResponseDTO> buscarUsuarioPorNome(@RequestBody String nomeUsuario) {
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorNome(nomeUsuario));
     }
 
     /**
      * Criar um novo usuário através dos dados informados.
      *
-     * @Param UsuarioRequestDTO
-     *
+     * @return UsuarioResponseDTO
+     * @Param usuarioRequestDTO com os dados de nome de usuário, nome completo e senha.
      */
     @PostMapping("/usuario")
     @Operation(summary = "Criar um usuário", description = "Criar um usuário", tags = {"Users"}, responses =
@@ -67,21 +109,18 @@ public class UserController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
             })
 
-    public ResponseEntity<String> criarNovoUsuario(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
-        usuarioService.criarNovoUsuario(usuarioRequestDTO);
-        return ResponseEntity.ok("Usuário criado com sucesso!");
+    public ResponseEntity<UsuarioResponseDTO> criarNovoUsuario(@RequestBody @Valid UsuarioRequestDTO usuarioRequestDTO) {
+        return ResponseEntity.ok(usuarioService.criarNovoUsuario(usuarioRequestDTO));
     }
 
     /**
-     * Update a save user.
-     * The user`s attributes to be updated must be passed by body params in json
-     * format!
+     * Atualizar informações de um usuário.
      *
-     * @param Long id, UserVO
-     * @param Long id, UserVO
+     * @param id com identificador do usuário a ser modificado
+     * @param usuarioAtualizarDTO com dados a serem atualizados do usuário
      * @return UserVO
      */
-    @PutMapping("/{id}")
+    @PutMapping("/usuario/{id}")
     @Operation(summary = "Update a user", description = "Update a user", tags = {"Users"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
@@ -89,54 +128,9 @@ public class UserController {
             @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-    public ResponseEntity<UserVO> update(@PathVariable("id") Long id, @RequestBody UserVO userVO) {
+    public ResponseEntity<UsuarioResponseDTO> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioAtualizarDTO usuarioAtualizarDTO) {
 
-        return ResponseEntity.ok(usuarioService.update(id, userVO));
-    }
-
-    /**
-     * Desactive a commom user.
-     *
-     * @param Long
-     * @return No_Content
-     */
-    @PatchMapping("/desable/{id}")
-    @Operation(summary = "Desactivate a user", description = "Desactivate a user", tags = {"Users"}, responses = {
-            @ApiResponse(description = "Success", responseCode = "200", content = @Content),
-            @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
-            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
-            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-
-    public ResponseEntity<String> desactiveCommomUser(@PathVariable("id") Long id) {
-        usuarioService.desactiveCommomUser(id);
-        return new ResponseEntity<String>("Desctivate", HttpStatus.NO_CONTENT);
-    }
-
-    /**
-     * Update or give a new vote for from a user for a movie.
-     *
-     * @param id
-     * @param movie_id
-     * @param vote
-     * @return
-     */
-    @PatchMapping("/vote/{id}")
-    @Operation(summary = "Add a vote for a movie", description = "Add a vote for a movie", tags = {
-            "Users"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
-            @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
-            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
-            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-    public ResponseEntity<?> voteForMovie(
-            @PathVariable("id") Long id,
-            @RequestParam(value = "movie_id") Long movie_id,
-            @RequestParam(value = "vote", required = true) Long vote) {
-
-        return usuarioService.voteForMovie(id, movie_id, vote);
-
+        return ResponseEntity.ok(usuarioService.atualizarUsuario(id, usuarioAtualizarDTO));
     }
 
 }

@@ -2,11 +2,7 @@ package com.fraga.APIRest.controller;
 
 import com.fraga.APIRest.dto.FilmeResponseDTO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fraga.APIRest.data.model.Filme;
 import com.fraga.APIRest.exception.InvalidParams;
@@ -32,13 +28,12 @@ public class FilmesController {
 
 
     /**
-     * Get a specific movie by id number.
-     * Path variable index the user to be returned!
+     *Busca um filme através do ID informado
      *
-     * @param Long
-     * @return MovieVO
+     * @param id com identificador do filme buscado
+     * @return FilmeResponseDTO
      */
-    @GetMapping("/buscar-filme/{id}")
+    @GetMapping("/filmes/{id}")
     @Operation(summary = "Buscar filme pelo id", description = "Buscar filme pelo id", tags = {"Filmes"},
             responses =
                     {
@@ -48,7 +43,7 @@ public class FilmesController {
                             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
                     })
-    public ResponseEntity<FilmeResponseDTO> buscarFilmePorId(@PathVariable("id") @NotNull Long id) {
+    public ResponseEntity<FilmeResponseDTO> buscarFilmePorId(@PathVariable @NotNull Long id) {
         return ResponseEntity.ok(filmeService.buscarFilmePorId(id));
     }
 
@@ -217,5 +212,31 @@ public class FilmesController {
 //        }
 //        return ResponseEntity.ok(service.findAllWithFilterAndPagination(queryParams));
 //    }
+
+    /**
+     * Atribui ou atualiza a nota de um usuário para um filme
+     *
+     * @param id
+     * @param movie_id
+     * @param vote
+     * @return
+     */
+    @PatchMapping("/adicionar-voto")
+    @Operation(summary = "Adicionar voto para um filme", description = "Adicionar voto para um filme", tags = {
+            "Users"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
+            @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
+            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
+            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
+    public ResponseEntity<?> voteForMovie(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "movie_id") Long movie_id,
+            @RequestParam(value = "vote", required = true) Long vote) {
+
+        return null;
+
+    }
+
 
 }

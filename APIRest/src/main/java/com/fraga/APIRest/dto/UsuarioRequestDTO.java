@@ -1,6 +1,5 @@
 package com.fraga.APIRest.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fraga.APIRest.data.model.Filme;
 
 import javax.validation.constraints.NotBlank;

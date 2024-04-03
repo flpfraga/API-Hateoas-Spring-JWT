@@ -1,11 +1,9 @@
 package com.fraga.APIRest.data.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 public class Ator implements Serializable {
@@ -17,19 +15,18 @@ public class Ator implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String name;
-
+	private String nome;
 
 	public Ator() {
-		// TODO Auto-generated constructor stub
 	}
 
-	public String getName() {
-		return name;
+
+	public String getNome() {
+		return nome;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setNome(String name) {
+		this.nome = name;
 	}
 
 	public Long getId() {
@@ -39,6 +36,5 @@ public class Ator implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 
 }

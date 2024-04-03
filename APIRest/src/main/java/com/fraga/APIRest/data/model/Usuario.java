@@ -50,7 +50,7 @@ public class Usuario implements UserDetails, Serializable{
 	@ManyToMany
 	@JoinTable(name = "usuario_filme", joinColumns = { @JoinColumn(name = "id_usuario") }, inverseJoinColumns = {
 			@JoinColumn(name = "id_filme") })
-	private List<Filme> filmeVotados;
+	private List<Filme> filmesVotados;
 
 	public List<String> getRoles() {
 		List<String> roles = new ArrayList<>();
@@ -175,11 +175,15 @@ public class Usuario implements UserDetails, Serializable{
 		this.enabled = enabled;
 	}
 
-	public List<Filme> getFilmeVotados() {
-		return filmeVotados;
+	public List<Filme> getFilmesVotados() {
+		return filmesVotados;
 	}
 
-	public void setFilmeVotados(List<Filme> filmeVotados) {
-		this.filmeVotados = filmeVotados;
+	public void setFilmesVotados(List<Filme> filmeVotados) {
+		this.filmesVotados = filmeVotados;
+	}
+
+	public List<String> getFilmesVotadosTitulo(){
+		return filmesVotados.stream().map(Filme::getTitulo).toList();
 	}
 }
