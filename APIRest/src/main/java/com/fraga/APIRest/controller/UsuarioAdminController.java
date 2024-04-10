@@ -1,13 +1,18 @@
 package com.fraga.APIRest.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fraga.APIRest.dto.DefaultResponseDTO;
+import com.fraga.APIRest.dto.UsuarioResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fraga.APIRest.data.model.Usuario;
-import com.fraga.APIRest.service.impl.FilmeServiceImpl;
 import com.fraga.APIRest.service.UsuarioService;
-import com.fraga.APIRest.util.queryManager.QueryParams;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -15,56 +20,36 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/admin/v1")
 @Tag(name = "Admin", description = "EndPoints for Managing Admin Actions")
 
-public class AdminController {
+public class UsuarioAdminController implements DefaultController {
 
-    @Autowired
-    private UsuarioService userService;
+    private final UsuarioService usuarioService;
 
-    @Autowired
-    private FilmeServiceImpl movieService;
+    public UsuarioAdminController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
-    @Autowired
-    private QueryParams<Usuario> queryParams;
 
     /**
-     * Return all user, not admin, actives. Default, order asc. Pagable option.
+     * Listar todos usuário ativos de forma paginada
      *
-     * @param page
-     * @param size
-     * @param orderBy
-     * @return
+     * @param pagina  com o número da página a ser retornada
+     * @param tamanho com o tamanho da página a ser retornado
      */
-//    @GetMapping("/users_active")
-//
-//    @Operation(summary = "Finds all user not admin, actives", description = "Finds all users not admin actives and ordened by name", tags = {
-//            "Admin"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
-//            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-//            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
-//            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-//            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-//
-//    public ResponseEntity<?> readAllUserActives(@RequestParam(value = "page", required = false) Integer page,
-//                                                @RequestParam(value = "size", defaultValue = "12") Integer size,
-//                                                @RequestParam(value = "orderBy", defaultValue = "asc") String orderBy) {
-//
-//        Usuario user = new Usuario();
-//        user.setActive(true);
-//        queryParams.setEntity(user);
-//        queryParams.setPage(page);
-//        queryParams.setSize(size);
-//
-//
-//        // Option no pagination
-//        if (page == null) {
-//            return ResponseEntity.ok(userService.findAllWithFilterAndPagination(queryParams));
-//        } else if (!queryParams.pageIsValid()) {
-//            throw new InvalidParams("Invalids values for pagination!");
-//        }
-//
-//        //
-//        return ResponseEntity.ok(userService.findAllWithFilterAndPagination(queryParams));
-//
-//    }
+    @GetMapping("/usuarios-ativos")
+
+    @Operation(summary = "Finds all user not admin, actives", description = "Finds all users not admin actives and ordened by name", tags = {
+            "Admin"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
+            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
+            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
+
+    public ResponseEntity<DefaultResponseDTO<Page<UsuarioResponseDTO>>> buscarTodosUsuariosAtivos(@RequestParam Integer pagina,
+                                                                                                  @RequestParam Integer tamanho) {
+
+        return retornarSucesso(usuarioService.buscarTodosUsuariosAtivos(pagina, tamanho));
+
+    }
 //
 //    /**
 //     * Create a new Admin user.

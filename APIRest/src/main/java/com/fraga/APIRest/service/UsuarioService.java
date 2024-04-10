@@ -1,5 +1,6 @@
 package com.fraga.APIRest.service;
 
+import com.fraga.APIRest.data.model.Usuario;
 import com.fraga.APIRest.dto.UsuarioAtualizarDTO;
 import com.fraga.APIRest.dto.UsuarioRequestDTO;
 import com.fraga.APIRest.dto.UsuarioResponseDTO;
@@ -23,7 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
       * @param id com identificador de um usuário que se deseja buscar
       * @return UsuarioResponseDTO
       */
-     UsuarioResponseDTO buscarUsuarioPorId(Long id);
+     Usuario buscarUsuarioPorId(Long id);
 
      /**
       * Buscar um usuário pelo nome do usuário
@@ -50,4 +51,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
       */
      UsuarioResponseDTO atualizarUsuario(Long id, UsuarioAtualizarDTO usuarioAtualizarDTO) ;
 
-}
+     /**
+      * Desativar um usuário
+      *
+      * @param id com identificador do usuário a ser desativado
+      */
+     void desativarUsuario(Long id) ;
+
+     Page<UsuarioResponseDTO> buscarTodosUsuariosAtivos (Integer pagina, Integer tamanho);
+
+ }

@@ -1,5 +1,7 @@
 package com.fraga.APIRest.dto;
 
+import com.fraga.APIRest.data.model.Filme;
+
 import java.util.List;
 
 public class FilmeResponseDTO {
@@ -9,6 +11,15 @@ public class FilmeResponseDTO {
     private String genero;
     private String detalhes;
     private List<String> atores;
+
+    public FilmeResponseDTO(Filme filme) {
+        this.titulo = filme.getTitulo();
+        this.detalhes = filme.getDetalhes();
+        this.diretor = filme.getDiretor();
+        this.genero = filme.getGenero();
+        this.atores = filme.getAtoresNome();
+
+    }
 
     public FilmeResponseDTO() {
     }

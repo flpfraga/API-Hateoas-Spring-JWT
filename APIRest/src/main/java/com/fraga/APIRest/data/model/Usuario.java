@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-public class Usuario implements UserDetails, Serializable{
+public class Usuario extends DataRegistro implements UserDetails, Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -70,6 +70,7 @@ public class Usuario implements UserDetails, Serializable{
 		return this.senha;
 	}
 	public Usuario() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
 

@@ -1,12 +1,12 @@
 package com.fraga.APIRest.controller;
 
+import com.fraga.APIRest.dto.DefaultResponseDTO;
 import com.fraga.APIRest.dto.FilmeResponseDTO;
+import com.fraga.APIRest.service.FilmeService;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.fraga.APIRest.data.model.Filme;
-import com.fraga.APIRest.exception.InvalidParams;
-import com.fraga.APIRest.service.impl.FilmeServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,17 +18,19 @@ import javax.validation.constraints.NotNull;
 @RestController
 @RequestMapping("/api/catalogo-filmes")
 @Tag(name = "Movies", description = "EndPoints for Managing Movies")
-public class FilmesController {
+public class FilmesController implements DefaultController {
 
-    private final FilmeServiceImpl filmeService;
+    private final FilmeService filmeService;
+    private final ModelMapper mapper;
 
-    public FilmesController(FilmeServiceImpl filmeService) {
+    public FilmesController(FilmeService filmeService, ModelMapper mapper) {
         this.filmeService = filmeService;
+        this.mapper = mapper;
     }
 
 
     /**
-     *Busca um filme através do ID informado
+     * Busca um filme através do ID informado
      *
      * @param id com identificador do filme buscado
      * @return FilmeResponseDTO
@@ -43,199 +45,55 @@ public class FilmesController {
                             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
                     })
-    public ResponseEntity<FilmeResponseDTO> buscarFilmePorId(@PathVariable @NotNull Long id) {
-        return ResponseEntity.ok(filmeService.buscarFilmePorId(id));
+    public ResponseEntity<DefaultResponseDTO<FilmeResponseDTO>> buscarFilmePorId(@PathVariable @NotNull Long id) {
+        return retornarSucesso(mapper.map(filmeService.buscarFilmePorId(id), FilmeResponseDTO.class));
     }
 
     /**
-     * Returns all movies sorted by name. Option pagination
+     * Buscar todos os filmes paginados e ordenados por algum de seus parâmetros
      *
-     * @return List<MovieVO>
+     * @param pagina     com número da página buscada
+     * @param tamanho    com tamanho de elementos da página
+     * @param ordenarPor com nome do parâmetro para ordenar a listagem de filmes
+     * @return Page<FilmeResponseDTO>
      */
-//    @GetMapping
-//    @Operation(summary = "Finds all movies sorted by name", description = "Finds movies sorted by name. Options pageable",
-//            tags =
-//                    {
-//                            "Movies"},
-//            responses =
-//                    {
-//                            @ApiResponse(description = "Success", responseCode = "200", content = @Content),
-//                            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-//                            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
-//                            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-//                            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
-//                    })
-//    public ResponseEntity<?> readAllOrderByName(@RequestParam(value = "page", required = false) Integer page,
-//                                                @RequestParam(value = "size", defaultValue = "12") Integer size) {
-//
-//        return ResponseEntity.ok(filmeService.(queryParams));
-//    }
-//
-//    /**
-//     * Returns all movies sorted by rate. Option pagination
-//     *
-//     * @param Integer
-//     * @param Integer
-//     * @param String
-//     * @return List<MovieVO>
-//     */
-//    @GetMapping("/top_rated")
-//    @Operation(summary = "Finds all movies sorted by rate", description = "Finds movies sorted by rate. Options pageable", tags = {
-//            "Movies"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
-//            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-//            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
-//            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-//            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-//    public ResponseEntity<?> readAllSortByRate(
-//            @RequestParam(value = "page", required = false) Integer page,
-//            @RequestParam(value = "size", defaultValue = "12") Integer size) {
-//
-//        queryParams.setOrderParam("voteAverage");
-//        queryParams.setPage(page);
-//        queryParams.setSize(size);
-//        queryParams.setSortDirection(false);
-//        if (page == null) {
-//            return ResponseEntity.ok(service.readAllInOrder(queryParams));
-//        }
-//
-//        return ResponseEntity.ok(service.readAllInOrderPagined(queryParams));
-//    }
-//
-//    /**
-//     * Return movies with a director filter
-//     *
-//     * @param Integer
-//     * @param Integer
-//     * @param String
-//     * @return MovieVO
-//     */
-//
-//    @GetMapping("/director")
-//    @Operation(summary = "Finds movies by director`s name", description = "Finds movies by director`s name", tags = {
-//            "Movies"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
-//            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-//            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
-//            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-//            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-//    public ResponseEntity<?> findAllByDirectorName(
-//            @RequestParam(value = "page", required = false) Integer page,
-//            @RequestParam(value = "size", defaultValue = "12") Integer size,
-//            @RequestParam(value = "filter", defaultValue = "") String filter) {
-//
-//        // Set a filter param
-//
-//        Filme movie = new Filme();
-//        movie.setDirector(filter);
-//        queryParams.setEntity(movie);
-//        queryParams.setPage(page);
-//        queryParams.setSize(size);
-//
-//        // Option no pagination
-//        if (page == null) {
-//            return ResponseEntity.ok(service.findAllWithFilter(queryParams));
-//        } else if (!queryParams.pageIsValid()) {
-//            throw new InvalidParams("Invalids values for pagination!");
-//        }
-//        return ResponseEntity.ok(service.findAllWithFilterAndPagination(queryParams));
-//    }
-//
-//    /**
-//     * Return movies with a title name filter
-//     *
-//     * @param Integer
-//     * @param Integer
-//     * @param String
-//     * @return MovieVO
-//     */
-//    @GetMapping("/title")
-//    @Operation(summary = "Finds movies by title`s name", description = "Finds movies by title`s name", tags = {
-//            "Movies"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
-//            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-//            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
-//            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-//            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-//    public ResponseEntity<?> findAllByTitleName(
-//            @RequestParam(value = "page", required = false) Integer page,
-//            @RequestParam(value = "size", defaultValue = "12") Integer size,
-//            @RequestParam(value = "filter") String filter) {
-//
-//        // Set a filter param
-//
-//        Filme movie = new Filme();
-//        movie.setTitle(filter);
-//        queryParams.setEntity(movie);
-//        queryParams.setPage(page);
-//        queryParams.setSize(size);
-//
-//        // Option no pagination
-//        if (page == null) {
-//            return ResponseEntity.ok(service.findAllWithFilter(queryParams));
-//        } else if (!queryParams.pageIsValid()) {
-//            throw new InvalidParams("Invalids values for pagination!");
-//        }
-//        return ResponseEntity.ok(service.findAllWithFilterAndPagination(queryParams));
-//    }
-//
-//    /**
-//     * Return movies with a genre filter
-//     *
-//     * @param Integer
-//     * @param Integer
-//     * @param String
-//     * @return MovieVO
-//     */
-//    @GetMapping("/genre")
-//    @Operation(summary = "Finds movies by genre", description = "Finds movies by genre", tags = {
-//            "Movies"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
-//            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-//            @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
-//            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-//            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-//    public ResponseEntity<?> findAllByGenre(
-//            @RequestParam(value = "page", required = false) Integer page,
-//            @RequestParam(value = "size", defaultValue = "12") Integer size,
-//            @RequestParam(value = "filter", defaultValue = "") String filter) {
-//
-//        // Set a filter param
-//
-//        Filme movie = new Filme();
-//        movie.setGenre(filter);
-//        queryParams.setEntity(movie);
-//        queryParams.setPage(page);
-//        queryParams.setSize(size);
-//
-//        // Option no pagination
-//        if (page == null) {
-//            return ResponseEntity.ok(service.findAllWithFilter(queryParams));
-//        } else if (!queryParams.pageIsValid()) {
-//            throw new InvalidParams("Invalids values for pagination!");
-//        }
-//        return ResponseEntity.ok(service.findAllWithFilterAndPagination(queryParams));
-//    }
+    @GetMapping("/filmes")
+    @Operation(summary = "Finds all movies sorted by name", description = "Finds movies sorted by name. Options pageable",
+            tags = {"Movies"},
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200", content = @Content),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
+            })
+    public ResponseEntity<DefaultResponseDTO<Page<FilmeResponseDTO>>> buscarFilmesOrdenadosPorParametro(@RequestParam(required = false) Integer pagina,
+                                                                                                        @RequestParam(required = false) Integer tamanho,
+                                                                                                        @RequestParam(required = false) String ordenarPor) {
+
+        return retornarSucesso(filmeService.buscarFilmesOrdenadosPorParametro(pagina, tamanho, ordenarPor));
+    }
 
     /**
-     * Atribui ou atualiza a nota de um usuário para um filme
+     * Buscar filmes paginados e ordenados pela média dos votos recebidos
      *
-     * @param id
-     * @param movie_id
-     * @param vote
-     * @return
+     * @param pagina  com número da página buscada
+     * @param tamanho com tamanho de elementos da página
+     * @param direcao com indicação de ordenação crescente ou decrescente
+     * @return List<MovieVO>
      */
-    @PatchMapping("/adicionar-voto")
-    @Operation(summary = "Adicionar voto para um filme", description = "Adicionar voto para um filme", tags = {
-            "Users"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
-            @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
+    @GetMapping("/media-votos")
+    @Operation(summary = "Buscar filmes ordenados pelos média dos votos", description = "Buscar filmes ordenados pelos média dos votos", tags = {
+            "Movies"}, responses = {@ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
             @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-    public ResponseEntity<?> voteForMovie(
-            @PathVariable("id") Long id,
-            @RequestParam(value = "movie_id") Long movie_id,
-            @RequestParam(value = "vote", required = true) Long vote) {
+    public ResponseEntity<DefaultResponseDTO<Page<FilmeResponseDTO>>> buscarOrdenadosMediaVotos(@RequestParam(required = false) Integer pagina,
+                                                                            @RequestParam(required = false) Integer tamanho,
+                                                                            @RequestParam(required = false, defaultValue = "Desc") String direcao) {
 
-        return null;
-
+        return retornarSucesso(filmeService.buscarFilmesOrdenadosPorMediaVotos(pagina, tamanho, direcao));
     }
 
 

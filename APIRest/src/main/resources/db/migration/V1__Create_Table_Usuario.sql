@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `credentials_non_expired` bit(1) DEFAULT NULL,
   `enabled` bit(1) DEFAULT NULL,
   `active` bit(1) DEFAULT NULL,
+  `criado_em` date NOT NULL,
+  `atualizado_em`date NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_user_name` (`nome_usuario`)
 ) ENGINE=InnoDB;
