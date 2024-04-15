@@ -1,9 +1,11 @@
 package com.fraga.APIRest.data.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 
 @Entity
 public class Ator implements Serializable {

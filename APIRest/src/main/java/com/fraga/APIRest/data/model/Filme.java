@@ -29,7 +29,7 @@ public class Filme implements Serializable {
 
 	private String detalhes;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(name = "filme_ator", joinColumns = { @JoinColumn(name = "id_filme") }, inverseJoinColumns = {
 			@JoinColumn(name = "id_ator") })
 	private List<Ator> atores;

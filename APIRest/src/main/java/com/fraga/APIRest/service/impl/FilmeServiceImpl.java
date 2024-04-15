@@ -2,17 +2,12 @@ package com.fraga.APIRest.service.impl;
 
 import com.fraga.APIRest.data.enums.EFilmeParametro;
 import com.fraga.APIRest.data.model.Filme;
-import com.fraga.APIRest.dto.FilmeParametrosDTO;
 import com.fraga.APIRest.dto.FilmeResponseDTO;
 import com.fraga.APIRest.exception.InvalidParams;
 import com.fraga.APIRest.exception.ResourceNotFoundException;
-import com.fraga.APIRest.repository.AtorRepository;
 import com.fraga.APIRest.repository.FilmeRepository;
-import com.fraga.APIRest.service.NotaUsuarioFilmeService;
-import com.fraga.APIRest.service.UsuarioService;
+import com.fraga.APIRest.service.FilmeService;
 import com.fraga.APIRest.util.PaginacaoUtils;
-import com.fraga.APIRest.util.validation.SimpleValidations;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -20,28 +15,18 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Service
-public class FilmeServiceImpl implements com.fraga.APIRest.service.FilmeService {
+public class FilmeServiceImpl implements FilmeService {
 
     private final FilmeRepository filmeRepository;
 
-    private final NotaUsuarioFilmeService notaUsuarioFilmeService;
-
-    public FilmeServiceImpl(FilmeRepository filmeRepository,
-                            NotaUsuarioFilmeService notaUsuarioFilmeService) {
+    public FilmeServiceImpl(FilmeRepository filmeRepository) {
         this.filmeRepository = filmeRepository;
-        this.notaUsuarioFilmeService = notaUsuarioFilmeService;
-    }
-
-
-    public void atualizarNotaFilme(Filme filme, Long nota) {
-
     }
 
 
     @Override
     public Filme buscarFilmePorId(Long id) {
         Optional<Filme> filme = filmeRepository.findById(id);
-
         if (filme.isPresent()) {
             return filme.get();
         }
@@ -71,15 +56,25 @@ public class FilmeServiceImpl implements com.fraga.APIRest.service.FilmeService 
     }
 
     @Override
-    public void atualizarMediaVotosPorFilme(Long idFilme) {
-        Filme filme = buscarFilmePorId(idFilme);
-        Double mediaVotos = notaUsuarioFilmeService.buscarTodasNotasPorFilme(filme).stream()
-                .mapToDouble(Integer::doubleValue).average().orElseThrow(
-                        () -> new ResourceNotFoundException("Não foi possível calcular a média de votos para o filme.")
-                );
-        filme.setMediaVotos(mediaVotos);
+    public Long buscarNumeroDeVotosPorFilme(Long id){
+        return buscarFilmePorId(id).getContagemVotos();
+    }
+
+    @Override
+    public void salvar(Filme filme){
         filmeRepository.save(filme);
     }
 
+
+    @Override
+    public void atualizaNotaFilme(Long idFilme, Double mediaVotos, Boolean isVotado) {
+        Filme filme = buscarFilmePorId(idFilme);
+
+        if(Boolean.TRUE.equals(isVotado)){
+            filme.setContagemVotos(filme.getContagemVotos() + 1);
+        }
+        filme.setMediaVotos(mediaVotos);
+        filmeRepository.save(filme);
+    }
 
 }

@@ -3,11 +3,12 @@ package com.fraga.APIRest.service;
 import com.fraga.APIRest.data.model.Filme;
 import com.fraga.APIRest.dto.FilmeParametrosDTO;
 import com.fraga.APIRest.dto.FilmeResponseDTO;
+import com.fraga.APIRest.service.observer.FilmeObserver;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface FilmeService {
+public interface FilmeService extends FilmeObserver {
 
 
     /**
@@ -43,11 +44,18 @@ public interface FilmeService {
                                                              Integer tamanho,
                                                              String ordenarPor);
 
+    /**
+     * Busca a contagem de votos que um filme recebeu
+     *
+     * @param id com valor do filme para buscar a contagem de votos
+     */
+    Long buscarNumeroDeVotosPorFilme(Long id);
+
 
     /**
-     * Atualiza a média de votos de um filme
+     * Salva um filme na base de dados
      *
-     * @param id com valor do filme a ter sua média de votos atualizada
+     * @param filme com objeto a ser salvo
      */
-    void atualizarMediaVotosPorFilme(Long id);
+    void salvar(Filme filme);
 }

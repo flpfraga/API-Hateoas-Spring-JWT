@@ -10,6 +10,8 @@ public class FilmeResponseDTO {
     private String diretor;
     private String genero;
     private String detalhes;
+    private Integer contagemVotos;
+    private Double mediaVotos;
     private List<String> atores;
 
     public FilmeResponseDTO(Filme filme) {
@@ -18,7 +20,8 @@ public class FilmeResponseDTO {
         this.diretor = filme.getDiretor();
         this.genero = filme.getGenero();
         this.atores = filme.getAtoresNome();
-
+        this.contagemVotos = filme.getContagemVotos();
+        this.mediaVotos = filme.getMediaVotos();
     }
 
     public FilmeResponseDTO() {
@@ -62,5 +65,21 @@ public class FilmeResponseDTO {
 
     public void setAtores(List<String> atores) {
         this.atores = atores;
+    }
+
+    public Integer getContagemVotos() {
+        return contagemVotos;
+    }
+
+    public void setContagemVotos(Integer contagemVotos) {
+        this.contagemVotos = contagemVotos;
+    }
+
+    public Double getMediaVotos() {
+        return mediaVotos;
+    }
+
+    public void setMediaVotos(Double mediaVotos) {
+        this.mediaVotos = mediaVotos;
     }
 }

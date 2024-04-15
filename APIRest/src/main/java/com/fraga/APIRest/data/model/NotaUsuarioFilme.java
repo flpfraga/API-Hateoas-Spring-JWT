@@ -26,4 +26,36 @@ public class NotaUsuarioFilme {
     public NotaUsuarioFilme() {
 
     }
+
+    public UsuarioFilmeId getId() {
+        return id;
+    }
+
+    public void setId(UsuarioFilmeId id) {
+        this.id = id;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public Filme getFilme() {
+        return filme;
+    }
+
+    public void setFilme(Filme filme) {
+        this.filme = filme;
+    }
+
+    public Integer getNota() {
+        return nota;
+    }
+
+    public void setNota(Integer nota) {
+        this.nota = nota;
+    }
 }

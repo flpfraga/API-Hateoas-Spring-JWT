@@ -7,7 +7,8 @@ import org.springframework.http.ResponseEntity;
 public interface DefaultController {
 
     default <T extends Object> ResponseEntity<DefaultResponseDTO<T>> retornarSucesso (final HttpStatus httpStatus, final T resposta){
-        return ResponseEntity.status(httpStatus.value()).body(new DefaultResponseDTO<>(httpStatus.value(), resposta));
+        return ResponseEntity.status(httpStatus.value())
+                .body(new DefaultResponseDTO<>(httpStatus.value(), resposta));
     }
 
 

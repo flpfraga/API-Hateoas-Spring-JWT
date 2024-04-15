@@ -103,7 +103,8 @@ public class UsuarioController implements DefaultController {
             })
 
     public ResponseEntity<DefaultResponseDTO<UsuarioResponseDTO>> criarNovoUsuario(@RequestBody @Valid UsuarioRequestDTO usuarioRequestDTO) {
-        return retornarSucesso(usuarioService.criarNovoUsuario(usuarioRequestDTO));
+        UsuarioResponseDTO usuarioResponseDTO = usuarioService.criarNovoUsuario(usuarioRequestDTO);
+        return retornarSucesso(usuarioResponseDTO);
     }
 
     /**

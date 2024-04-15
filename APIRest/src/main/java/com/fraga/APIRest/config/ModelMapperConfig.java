@@ -18,8 +18,6 @@ public class ModelMapperConfig {
             mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
             mapper.typeMap(Filme.class, FilmeResponseDTO.class).
                     addMappings(map -> map.map(Filme::getAtoresNome, FilmeResponseDTO::setAtores));
-            mapper.typeMap(Usuario.class, UsuarioResponseDTO.class).
-                    addMappings(map -> map.map(Usuario::getFilmesVotadosTitulo, UsuarioResponseDTO::setFilmesVotados));
         return mapper;
     }
 }

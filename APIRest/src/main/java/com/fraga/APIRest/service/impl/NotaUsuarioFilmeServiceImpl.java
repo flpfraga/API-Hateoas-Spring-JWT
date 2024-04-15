@@ -3,16 +3,19 @@ package com.fraga.APIRest.service.impl;
 import com.fraga.APIRest.data.model.Filme;
 import com.fraga.APIRest.data.model.NotaUsuarioFilme;
 import com.fraga.APIRest.data.model.Usuario;
+import com.fraga.APIRest.exception.ResourceNotFoundException;
 import com.fraga.APIRest.repository.NotaUsuarioFilmeRepository;
 import com.fraga.APIRest.service.FilmeService;
 import com.fraga.APIRest.service.NotaUsuarioFilmeService;
 import com.fraga.APIRest.service.UsuarioService;
+import com.fraga.APIRest.service.observer.impl.NotaUsuarioFilmeObservableImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class NotaUsuarioFilmeServiceImpl implements NotaUsuarioFilmeService {
+public class NotaUsuarioFilmeServiceImpl extends NotaUsuarioFilmeObservableImpl implements NotaUsuarioFilmeService {
 
     private final NotaUsuarioFilmeRepository notaUsuarioFilmeRepository;
     private final UsuarioService usuarioService;
@@ -27,16 +30,32 @@ public class NotaUsuarioFilmeServiceImpl implements NotaUsuarioFilmeService {
     }
 
     @Override
-    public void atualizarNotaFilme(Long idUsuario, Long idFilme, Integer nota){
+    public void atualizarNotaFilme(Long idUsuario, Long idFilme, Integer nota) {
         Usuario usuario = usuarioService.buscarUsuarioPorId(idUsuario);
         Filme filme = filmeService.buscarFilmePorId(idFilme);
-
         notaUsuarioFilmeRepository.save(new NotaUsuarioFilme(usuario, filme, nota));
+
+        notificar(usuario, filme);
+    }
+
+    private void notificar(Usuario usuario, Filme filme) {
+        Double mediaVotos = buscarTodasNotasPorFilme(filme)
+                .stream().mapToDouble(Integer::doubleValue).average().orElseThrow(
+                        () -> new ResourceNotFoundException("Não foi possível calcular a média de votos para o filme.")
+                );
+
+        notifyObservers(filme.getId(), mediaVotos, notaUsuarioFilmeRepository.
+                buscarNotaUsuarioFilmePorUsuarioEhFilme(usuario, filme).isEmpty());
     }
 
     @Override
-    public List<Integer> buscarTodasNotasPorFilme(Filme filme){
-        return notaUsuarioFilmeRepository.buscarNotasPorFilme(filme);
+    public List<Integer> buscarTodasNotasPorFilme(Filme filme) {
+        return notaUsuarioFilmeRepository.buscarTodasNotasPorFilme(filme);
+    }
+
+    @Override
+    public List<NotaUsuarioFilme> buscarTodosNotasTodosFilmes() {
+        return notaUsuarioFilmeRepository.findAll();
     }
 
 }

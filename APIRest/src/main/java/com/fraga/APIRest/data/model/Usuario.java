@@ -5,12 +5,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
-public class Usuario extends DataRegistro implements UserDetails, Serializable{
+public class Usuario implements UserDetails, Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -41,16 +42,15 @@ public class Usuario extends DataRegistro implements UserDetails, Serializable{
 
 	@Column
 	private Boolean active;
+	@Column
+	private final LocalDate criadoEm = LocalDate.now();
+	@Column
+	private LocalDate atualizadoEm;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "usuario_permission", joinColumns = { @JoinColumn(name = "id_usuario") }, inverseJoinColumns = {
 			@JoinColumn(name = "id_permission") })
 	private List<Permission> permissions;
-	
-	@ManyToMany
-	@JoinTable(name = "usuario_filme", joinColumns = { @JoinColumn(name = "id_usuario") }, inverseJoinColumns = {
-			@JoinColumn(name = "id_filme") })
-	private List<Filme> filmesVotados;
 
 	public List<String> getRoles() {
 		List<String> roles = new ArrayList<>();
@@ -71,7 +71,6 @@ public class Usuario extends DataRegistro implements UserDetails, Serializable{
 	}
 	public Usuario() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Long getId() {
@@ -171,20 +170,19 @@ public class Usuario extends DataRegistro implements UserDetails, Serializable{
 	public void setCredentialsNonExpired(boolean credentialsNonExpired) {
 		this.credentialsNonExpired = credentialsNonExpired;
 	}
-
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public List<Filme> getFilmesVotados() {
-		return filmesVotados;
+	public LocalDate getCriadoEm() {
+		return criadoEm;
 	}
 
-	public void setFilmesVotados(List<Filme> filmeVotados) {
-		this.filmesVotados = filmeVotados;
+	public LocalDate getAtualizadoEm() {
+		return atualizadoEm;
 	}
 
-	public List<String> getFilmesVotadosTitulo(){
-		return filmesVotados.stream().map(Filme::getTitulo).toList();
+	public void setAtualizadoEm(LocalDate atualizadoEm) {
+		this.atualizadoEm = atualizadoEm;
 	}
 }

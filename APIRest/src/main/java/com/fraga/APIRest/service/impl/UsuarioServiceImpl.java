@@ -13,7 +13,6 @@ import com.fraga.APIRest.service.UsuarioService;
 import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.fraga.APIRest.util.PaginacaoUtils.gerarPaginacao;
-import static com.fraga.APIRest.util.PaginacaoUtils.gerarPaginacaoOrdenada;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {

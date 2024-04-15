@@ -13,7 +13,6 @@ public class UsuarioResponseDTO {
     public UsuarioResponseDTO(Usuario usuario) {
         this.nomeUsuario = usuario.getNomeUsuario();
         this.nomeCompleto = usuario.getNomeCompleto();
-        this.filmesVotados = usuario.getFilmesVotados().stream().map(Filme::getTitulo).toList();
     }
 
     public UsuarioResponseDTO() {
