@@ -7,7 +7,7 @@ public class PasswordEncripitingBCrypt {
     
     /**
      * Encripty a password before save or update the data base
-     * @param String
+     * @param password
      * @return String
      */
     public static String encript(String password) {
