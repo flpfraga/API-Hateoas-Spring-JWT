@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/v1")
+@RequestMapping("/api/admin/users/v1")
 @Tag(name = "Usuario Admin", description = "Endpoints para gerenciar a parte administrativa dos usuários")
 
 public class UsuarioAdminController implements DefaultController {
@@ -50,7 +50,7 @@ public class UsuarioAdminController implements DefaultController {
      *
      * @Param id com id do usuário a receber as permissões
      */
-    @PostMapping("user-to-admin/{id}")
+    @PatchMapping("/common-to-admin/{id}")
     @Operation(summary = "Create a admin user", description = "Create a user", tags = {"Admin"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
@@ -69,7 +69,7 @@ public class UsuarioAdminController implements DefaultController {
      *
      * @Param id com id do usuário a remover as permissões
      */
-    @PostMapping("user-to-common/{id}")
+    @PatchMapping("/admin-to-common/{id}")
     @Operation(summary = "Create a admin user", description = "Create a user", tags = {"Admin"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "No Content", responseCode = "204", content = @Content),

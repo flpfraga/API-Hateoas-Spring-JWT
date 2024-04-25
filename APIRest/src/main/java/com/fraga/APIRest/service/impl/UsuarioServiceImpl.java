@@ -133,6 +133,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public void atualizarUsuarioCommon (Long id){
         Usuario usuario = buscarUsuarioPorId(id);
+        usuario.setPermissions(usuario.getPermissions().stream()
+                .filter(permission -> EPermissaoUsuario.COMMON_USER.getPermissao().equals(permission.getDescription()))
+                .toList());
         adicionarPermissaoUsuarioComum(usuario);
         usuarioRepository.save(usuario);
     }

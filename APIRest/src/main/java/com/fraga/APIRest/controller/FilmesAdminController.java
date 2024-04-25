@@ -83,7 +83,7 @@ public class FilmesAdminController implements DefaultController {
                             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
                     })
-    public ResponseEntity<DefaultResponseDTO<String>> atualizarFilme(@PathVariable("id") @NotNull Long id) {
+    public ResponseEntity<DefaultResponseDTO<String>> deletarFilmePorId(@PathVariable("id") @NotNull Long id) {
         filmeService.deletarFilmesPorId(id);
         return retornarSucesso("Filme deletado com sucesso");
     }
