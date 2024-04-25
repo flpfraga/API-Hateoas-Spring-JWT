@@ -1,6 +1,7 @@
 package com.fraga.APIRest.data.error;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class ErrorMessage implements Serializable {
 
@@ -9,11 +10,13 @@ public class ErrorMessage implements Serializable {
 	private String titulo;
 	private Integer status;
 	private String messagem;
+	private Map<String, String> erros;
 	
-	public ErrorMessage(String titulo, Integer status, String messagem) {
+	public ErrorMessage(String titulo, Integer status, String messagem, Map<String, String> erros) {
 		this.titulo = titulo;
 		this.status = status;
 		this.messagem = messagem;
+		this.erros = erros;
 	}
 	public String getTitulo() {
 		return titulo;
@@ -33,8 +36,13 @@ public class ErrorMessage implements Serializable {
 	public void setMessagem(String messagem) {
 		this.messagem = messagem;
 	}
-	
-	
 
+	public Map<String, String> getErros() {
+		return erros;
+	}
+
+	public void setErros(Map<String, String> erros) {
+		this.erros = erros;
+	}
 }
 

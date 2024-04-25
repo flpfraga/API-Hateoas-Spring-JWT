@@ -3,6 +3,7 @@ package com.fraga.APIRest.service.impl;
 import com.fraga.APIRest.data.model.Permission;
 import com.fraga.APIRest.data.model.Usuario;
 import com.fraga.APIRest.exception.BadCredentialsException;
+import com.fraga.APIRest.exception.InvalidParams;
 import com.fraga.APIRest.repository.UsuarioRepository;
 import com.fraga.APIRest.security.AccountCredentialsRequest;
 import com.fraga.APIRest.security.Token;
@@ -41,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             authenticaionManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         }  catch (Exception e) {
-            throw new BadCredentialsException("Invalid username password supplied!");
+            throw new InvalidParams("Nome do usuário inválido");
         }
     }
     
@@ -55,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
                     .map(Permission::getDescription).toList());
             return token;
         } else {
-            throw new UsernameNotFoundException("Username " + username + " not found!");
+            throw new InvalidParams("Nome do usuário "+username+ " não encontrado!");
         }
 
     }

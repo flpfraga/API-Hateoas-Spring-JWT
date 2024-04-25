@@ -1,18 +1,56 @@
 package com.fraga.APIRest.dto;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class FilmeRequestDTO {
 
-    @NotBlank(message = "O título do filme não pode estar em vazio.")
+    @NotBlank
     private String titulo;
-    @NotBlank(message = "O diretor do filme não pode estar em vazio.")
+    @NotBlank
     private String diretor;
-    @NotBlank(message = "O gênero do filme não pode estar em vazio.")
+    @NotBlank
     private String genero;
     private String detalhes;
-    @NotNull(message = "Incluao ao menos o ID de um ator para este filme.")
-    private List< Long> atores;
+    private List<String> atores;
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getDiretor() {
+        return diretor;
+    }
+
+    public void setDiretor(String diretor) {
+        this.diretor = diretor;
+    }
+
+    public String getGenero() {
+        return genero;
+    }
+
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    public String getDetalhes() {
+        return detalhes;
+    }
+
+    public void setDetalhes(String detalhes) {
+        this.detalhes = detalhes;
+    }
+
+    public List<String> getAtores() {
+        return atores;
+    }
+
+    public void setAtores(List<String> atores) {
+        this.atores = atores;
+    }
 }

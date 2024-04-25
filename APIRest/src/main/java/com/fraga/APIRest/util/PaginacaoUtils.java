@@ -39,9 +39,9 @@ public class PaginacaoUtils {
         }
 
         if(EDirecaoOrdenacao.ASC.getDirecao().equalsIgnoreCase(direcao)){
-            return PageRequest.of(page, size, Sort.by(ordenarPor,direcao ).ascending());
+            return PageRequest.of(page, size, Sort.by(ordenarPor).ascending());
         }
-        return PageRequest.of(page, size, Sort.by(ordenarPor,direcao ).descending());
+        return PageRequest.of(page, size, Sort.by(ordenarPor).descending());
     }
 
 }

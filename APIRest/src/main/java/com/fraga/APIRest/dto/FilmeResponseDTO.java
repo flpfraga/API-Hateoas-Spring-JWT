@@ -6,15 +6,17 @@ import java.util.List;
 
 public class FilmeResponseDTO {
 
+    private Long id;
     private String titulo;
     private String diretor;
     private String genero;
     private String detalhes;
-    private Integer contagemVotos;
+    private Long contagemVotos;
     private Double mediaVotos;
     private List<String> atores;
 
     public FilmeResponseDTO(Filme filme) {
+        this.id = filme.getId();
         this.titulo = filme.getTitulo();
         this.detalhes = filme.getDetalhes();
         this.diretor = filme.getDiretor();
@@ -67,11 +69,11 @@ public class FilmeResponseDTO {
         this.atores = atores;
     }
 
-    public Integer getContagemVotos() {
+    public Long getContagemVotos() {
         return contagemVotos;
     }
 
-    public void setContagemVotos(Integer contagemVotos) {
+    public void setContagemVotos(Long contagemVotos) {
         this.contagemVotos = contagemVotos;
     }
 
@@ -81,5 +83,13 @@ public class FilmeResponseDTO {
 
     public void setMediaVotos(Double mediaVotos) {
         this.mediaVotos = mediaVotos;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

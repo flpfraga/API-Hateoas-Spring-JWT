@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
-@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-public class InvalidParams extends TokenExpiredException{
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class InvalidParams extends ServiceException{
 	
 	private static final long serialVersionUID = 1L;
 	

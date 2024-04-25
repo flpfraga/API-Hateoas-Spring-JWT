@@ -1,6 +1,10 @@
 package com.fraga.APIRest.service.observer;
 
+import com.fraga.APIRest.dto.FilmeObserverDTO;
+import org.springframework.stereotype.Service;
+
+@Service
 public interface FilmeObserver {
-    void atualizaNotaFilme(Long idFilme, Double mediaVotos, Boolean isVotado);
+    void update(String evento, FilmeObserverDTO dado);
 
 }

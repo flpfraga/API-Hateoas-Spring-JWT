@@ -18,7 +18,6 @@ public interface NotaUsuarioFilmeRepository extends JpaRepository<NotaUsuarioFil
     @Query("SELECT n.nota FROM NotaUsuarioFilme n WHERE n.filme =: filme")
     List<Integer> buscarTodasNotasPorFilme(@Param("filme") Filme filme);
 
-    @Query("SELECT n FROM NotaUsuarioFilme n WHERE n.filme =: filme and n.usuario =: usuario")
-    Optional<NotaUsuarioFilme> buscarNotaUsuarioFilmePorUsuarioEhFilme(@Param("usuario")Usuario usuario,
-                                                                       @Param("filme") Filme filme);
+    @Query("SELECT n.filme FROM NotaUsuarioFilme n WHERE n.usuario =: usuario")
+    List<Filme> buscarFilmesVotadosPorUsuario(@Param("usuario")Usuario usuario);
 }
