@@ -24,11 +24,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 
 	@Query("SELECT u FROM Usuario u WHERE u.nomeUsuario =:userName")
 	Optional<Usuario> buscarPorNomeUsuario(@Param("userName") String userName);
-	
-	@Modifying
-	@Query("UPDATE Usuario u Set u.active = false WHERE u.id =:id")
-	void desactiveCommomUser(@Param("id") Long id);
-	
-	
 
 }

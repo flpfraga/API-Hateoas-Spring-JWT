@@ -1,6 +1,9 @@
 package com.fraga.APIRest.dto;
 
+import javax.validation.constraints.NotBlank;
+
 public class UsuarioAtualizarDTO {
+    @NotBlank
     private String nomeCompleto;
 
     public String getNomeCompleto() {

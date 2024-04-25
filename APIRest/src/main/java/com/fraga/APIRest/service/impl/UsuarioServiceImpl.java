@@ -1,11 +1,13 @@
 package com.fraga.APIRest.service.impl;
 
+import com.fraga.APIRest.data.enums.EPermissaoUsuario;
 import com.fraga.APIRest.data.model.Permission;
 import com.fraga.APIRest.data.model.Usuario;
 import com.fraga.APIRest.dto.UsuarioAtualizarDTO;
 import com.fraga.APIRest.dto.UsuarioRequestDTO;
 import com.fraga.APIRest.dto.UsuarioResponseDTO;
 import com.fraga.APIRest.exception.BadCredentialsException;
+import com.fraga.APIRest.exception.InvalidJwtAuthenticationException;
 import com.fraga.APIRest.exception.InvalidParams;
 import com.fraga.APIRest.repository.UsuarioRepository;
 import com.fraga.APIRest.security.cripting.PasswordEncripitingBCrypt;
@@ -73,13 +75,19 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public UsuarioResponseDTO buscarUsuarioPorNome(String nomeUsuario) {
         if (Strings.isBlank(nomeUsuario)) {
-            throw new BadCredentialsException("O nome do usuário não pode ser vazio!");
+            throw new InvalidParams("O nome do usuário não pode ser vazio!");
         }
         return mapper.map(buscarPorNome(nomeUsuario, true), UsuarioResponseDTO.class);
     }
 
     private void adicionarPermissaoUsuarioComum(Usuario usuario) {
-        usuario.setPermissions(List.of(new Permission(2, "COMMON_USER")));
+        usuario.setPermissions(List.of(new Permission(
+                EPermissaoUsuario.COMMON_USER.getId(), EPermissaoUsuario.COMMON_USER.getPermissao())));
+    }
+
+    private void adicionarPermissaoUsuarioAdmin(Usuario usuario) {
+        usuario.getPermissions().add(new Permission(
+                EPermissaoUsuario.ADMIN.getId(), EPermissaoUsuario.ADMIN.getPermissao()));
     }
 
     private String encriptografarSenha(String senha) {
@@ -108,7 +116,25 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return usuarioRepository.loadUserByUsername(username);
+        Usuario usuario = usuarioRepository.loadUserByUsername(username);
+        if(Objects.isNull(usuario)){
+            throw new InvalidJwtAuthenticationException("Token inválido");
+        }
+        return usuario;
+    }
+
+    @Override
+    public void atualizarUsuarioAdmin (Long id){
+        Usuario usuario = buscarUsuarioPorId(id);
+        adicionarPermissaoUsuarioAdmin(usuario);
+        usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public void atualizarUsuarioCommon (Long id){
+        Usuario usuario = buscarUsuarioPorId(id);
+        adicionarPermissaoUsuarioComum(usuario);
+        usuarioRepository.save(usuario);
     }
 
 }

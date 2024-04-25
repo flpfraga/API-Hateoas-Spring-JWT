@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioRequestDTO {
-    @NotBlank(message = "O campo nome do usuário não pode estar vazio.")
+    @NotBlank
     private String nomeUsuario;
-    @NotBlank(message = "O campo nome completo não pode estar vazio.")
+    @NotBlank
     private String nomeCompleto;
-    @NotBlank(message = "Uma senha deve ser informada.")
+    @NotBlank
     private String senha;
     private final Boolean  accountNonExpired = true;
     private final Boolean accountNonLocked= true;

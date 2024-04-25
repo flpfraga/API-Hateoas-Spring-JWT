@@ -1,11 +1,13 @@
 package com.fraga.APIRest.service;
 
 import com.fraga.APIRest.data.model.Filme;
-import com.fraga.APIRest.dto.FilmeParametrosDTO;
+import com.fraga.APIRest.dto.FilmeRequestDTO;
 import com.fraga.APIRest.dto.FilmeResponseDTO;
 import com.fraga.APIRest.service.observer.FilmeObserver;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface FilmeService extends FilmeObserver {
@@ -17,7 +19,6 @@ public interface FilmeService extends FilmeObserver {
      * @param id com valor do id do filme a ser buscado
      * @return Filme
      */
-
     Filme buscarFilmePorId(Long id);
 
 
@@ -45,17 +46,35 @@ public interface FilmeService extends FilmeObserver {
                                                              String ordenarPor);
 
     /**
-     * Busca a contagem de votos que um filme recebeu
+     * Adicionar um filme a coleção
      *
-     * @param id com valor do filme para buscar a contagem de votos
+     * @param filmeRequestDTO com novo filme a ser adicionado
+     * @return FilmeResponseDTO
      */
-    Long buscarNumeroDeVotosPorFilme(Long id);
+    FilmeResponseDTO adicionarFilmes(FilmeRequestDTO filmeRequestDTO);
+
+    /**
+     * Adicionar um filme a coleção
+     *
+     * @param id com o valor do identificador do filme a ser deletado
+     */
+    void deletarFilmesPorId(Long id);
+
+    /**
+     * Adicionar um filme a coleção
+     *
+     * @param id              com o valor do identificador do filme a ser atualizado
+     * @param filmeRequestDTO com os valores do filme a ser atualizado
+     * @return FilmeResponseDTO
+     */
+    FilmeResponseDTO atualizarFilmes(Long id, FilmeRequestDTO filmeRequestDTO);
 
 
     /**
-     * Salva um filme na base de dados
+     * Atualiza lista de atores de um filme
      *
-     * @param filme com objeto a ser salvo
+     * @param id              com o valor do identificador do filme a ser atualizado
+     * @param idsAtores com ids dos atores
      */
-    void salvar(Filme filme);
+    void atualizarAtoresFilme(Long id, List<Long> idsAtores);
 }

@@ -16,8 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/api/catalogo-filmes")
-@Tag(name = "Movies", description = "EndPoints for Managing Movies")
+@RequestMapping("/api/catalogo-filmes/v1")
+@Tag(name = "Filme", description = "Endpoints para buscar filmes")
 public class FilmesController implements DefaultController {
 
     private final FilmeService filmeService;
@@ -90,11 +90,13 @@ public class FilmesController implements DefaultController {
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
     public ResponseEntity<DefaultResponseDTO<Page<FilmeResponseDTO>>> buscarOrdenadosMediaVotos(@RequestParam(required = false) Integer pagina,
-                                                                            @RequestParam(required = false) Integer tamanho,
-                                                                            @RequestParam(required = false, defaultValue = "Desc") String direcao) {
+                                                                                                @RequestParam(required = false) Integer tamanho,
+                                                                                                @RequestParam(required = false, defaultValue = "Desc") String direcao) {
 
         return retornarSucesso(filmeService.buscarFilmesOrdenadosPorMediaVotos(pagina, tamanho, direcao));
     }
+
+
 
 
 }

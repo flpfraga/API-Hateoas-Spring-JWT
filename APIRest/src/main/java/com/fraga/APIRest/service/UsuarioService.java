@@ -58,6 +58,26 @@ import org.springframework.security.core.userdetails.UserDetailsService;
       */
      void desativarUsuario(Long id) ;
 
+     /**
+      * Desativar um usuário
+      *
+      * @param pagina com número da página de usuários a ser buscado
+      * @param tamanho com número de usuários em cada página
+      */
      Page<UsuarioResponseDTO> buscarTodosUsuariosAtivos (Integer pagina, Integer tamanho);
+
+     /**
+      * Atualiza um usuário para ser admin
+      *
+      * @param id com identificador do usuário
+      */
+     void atualizarUsuarioAdmin (Long id);
+
+     /**
+      * Atualiza um usuário para ser admin
+      *
+      * @param id com identificador do usuário
+      */
+     void atualizarUsuarioCommon (Long id);
 
  }

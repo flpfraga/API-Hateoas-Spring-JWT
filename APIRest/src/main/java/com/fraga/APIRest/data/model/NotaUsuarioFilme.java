@@ -1,23 +1,29 @@
 package com.fraga.APIRest.data.model;
 
 import javax.persistence.*;
+import java.io.Serial;
+import java.io.Serializable;
 
 @Entity
-public class NotaUsuarioFilme {
+@Table(name = "nota_usuario_filme")
+public class NotaUsuarioFilme implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     @EmbeddedId
     private UsuarioFilmeId id;
 
     @ManyToOne
-    @MapsId("idUsuario")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", insertable = false, updatable = false)
     private Usuario usuario;
 
     @ManyToOne
-    @MapsId("idFilme")
+    @JoinColumn(name = "id_filme", referencedColumnName = "id", insertable = false, updatable = false)
     private Filme filme;
 
     private Integer nota;
 
     public NotaUsuarioFilme( Usuario usuario, Filme filme, Integer nota) {
+        this.id = new UsuarioFilmeId(usuario.getId(), filme.getId());
         this.usuario = usuario;
         this.filme = filme;
         this.nota = nota;

@@ -5,11 +5,11 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class MovieServiceImplTest {
+public class MovieFilmeFilmeServiceImplTest {
 
 
 
     @InjectMocks
-    private FilmeService movieService;
+    private FilmeService movieFilmeService;
 
 }

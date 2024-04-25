@@ -33,8 +33,8 @@ public class SecurityConfiguration {
 		return http.getSharedObject(AuthenticationManagerBuilder.class).userDetailsService(userDetailService)
 				.passwordEncoder(bCryptPasswordEncoder).and().build();
 	}
-	
-	
+
+
 
 
 	@Bean
@@ -46,8 +46,8 @@ public class SecurityConfiguration {
 		.and()
 			.authorizeRequests()
 			.antMatchers("/auth/signin", "/api-docs/**", "/swagger-ui.html**").permitAll()
-			.antMatchers(HttpMethod.POST, "/api/user/v1/**").anonymous()
-			.antMatchers("/api/user/**", "/api/movie/**").authenticated()
+			.antMatchers(HttpMethod.POST, "/api/users/v1/usuario").permitAll()
+			.antMatchers("/api/usuario-filme/**", "/api/users/**", "/api/catalogo-filmes/**").authenticated()
 			.antMatchers("/api/admin/**").hasAuthority("ADMIN")
 		.and()
 			.cors()
@@ -56,6 +56,6 @@ public class SecurityConfiguration {
 		return http.build();
 
 	}
-	
+
 
 }

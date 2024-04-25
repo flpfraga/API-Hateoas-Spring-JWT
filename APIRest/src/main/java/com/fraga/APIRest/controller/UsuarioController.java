@@ -39,14 +39,15 @@ public class UsuarioController implements DefaultController {
      * @return Page<UsuarioResponseDTO>
      */
     @GetMapping("/usuarios")
-    @Operation(summary = "Buscar usuário pelo ID", description = "Buscar usuário pelo ID", tags = {"Users"}, responses = {
+    @Operation(summary = "Buscar todos usuário", description = "Buscar todos usuário", tags = {"Users"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
             @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-    public ResponseEntity<DefaultResponseDTO<Page<UsuarioResponseDTO>>> buscarTodosUsuarios(@RequestParam("page") Integer pagina,
-                                                                                           @RequestParam("size") Integer tamanho) {
+
+    public ResponseEntity<DefaultResponseDTO<Page<UsuarioResponseDTO>>> buscarTodosUsuarios(@RequestParam Integer pagina,
+                                                                                            @RequestParam Integer tamanho) {
 
         return retornarSucesso(usuarioService.buscarTodosUsuarios(pagina, tamanho));
     }
@@ -57,7 +58,7 @@ public class UsuarioController implements DefaultController {
      * @param id com identificador de um usuário que se deseja buscar
      * @return UsuarioResponseDTO
      */
-    @GetMapping("/usuario/{id}")
+    @GetMapping("/usuarios/{id}")
     @Operation(summary = "Buscar usuário pelo ID", description = "Buscar usuário pelo ID", tags = {"Users"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -71,18 +72,18 @@ public class UsuarioController implements DefaultController {
     /**
      * Buscar um usuário pelo nome do usuário
      *
-     * @param nomeUsuario com nome do usuário a ser buscado
+     * @param nome com nome do usuário a ser buscado
      * @return UsuarioResponseDTO
      */
-    @GetMapping("/usuario-por-nome")
-    @Operation(summary = "Buscar usuário pelo ID", description = "Buscar usuário pelo ID", tags = {"Users"}, responses = {
+    @GetMapping("/usuarios/{nome}/nome")
+    @Operation(summary = "Buscar usuário pelo user name", description = "Buscar usuário pelo  user name", tags = {"Users"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
             @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-    public ResponseEntity<DefaultResponseDTO<UsuarioResponseDTO>> buscarUsuarioPorNome(@RequestBody String nomeUsuario) {
-        return retornarSucesso(usuarioService.buscarUsuarioPorNome(nomeUsuario));
+    public ResponseEntity<DefaultResponseDTO<UsuarioResponseDTO>> buscarUsuarioPorNome(@PathVariable("nome") String nome) {
+        return retornarSucesso(usuarioService.buscarUsuarioPorNome(nome));
     }
 
     /**
@@ -91,7 +92,6 @@ public class UsuarioController implements DefaultController {
      * @return UsuarioResponseDTO
      * @Param usuarioRequestDTO com os dados de nome de usuário, nome completo e senha.
      */
-    @PostMapping("/usuario")
     @Operation(summary = "Criar um usuário", description = "Criar um usuário", tags = {"Users"}, responses =
             {
                     @ApiResponse(description = "Success", responseCode = "200", content = @Content),
@@ -102,7 +102,8 @@ public class UsuarioController implements DefaultController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
             })
 
-    public ResponseEntity<DefaultResponseDTO<UsuarioResponseDTO>> criarNovoUsuario(@RequestBody @Valid UsuarioRequestDTO usuarioRequestDTO) {
+    @PostMapping("/usuario")
+    public ResponseEntity<DefaultResponseDTO<UsuarioResponseDTO>> criarNovoUsuario(@Valid @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.criarNovoUsuario(usuarioRequestDTO);
         return retornarSucesso(usuarioResponseDTO);
     }
@@ -110,11 +111,10 @@ public class UsuarioController implements DefaultController {
     /**
      * Atualizar informações de um usuário.
      *
-     * @param id com identificador do usuário a ser modificado
+     * @param id                  com identificador do usuário a ser modificado
      * @param usuarioAtualizarDTO com dados a serem atualizados do usuário
      * @return UserVO
      */
-    @PutMapping("/usuario/{id}")
     @Operation(summary = "Update a user", description = "Update a user", tags = {"Users"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
@@ -122,18 +122,20 @@ public class UsuarioController implements DefaultController {
             @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
-    public ResponseEntity<DefaultResponseDTO<UsuarioResponseDTO>> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioAtualizarDTO usuarioAtualizarDTO) {
+
+    @PutMapping("/usuario/{id}")
+    public ResponseEntity<DefaultResponseDTO<UsuarioResponseDTO>> atualizarUsuario(@PathVariable Long id,
+                                                                                   @Valid @RequestBody UsuarioAtualizarDTO usuarioAtualizarDTO) {
 
         return retornarSucesso(usuarioService.atualizarUsuario(id, usuarioAtualizarDTO));
     }
 
     /**
-     * Atualizar informações de um usuário.
+     * Modificar o status de um usuário para inativo.
      *
      * @param id com identificador do usuário a ser desativado
      * @return UserVO
      */
-    @PutMapping("/desativar-usuario/{id}")
     @Operation(summary = "Update a user", description = "Update a user", tags = {"Users"}, responses = {
             @ApiResponse(description = "Success", responseCode = "200", content = @Content),
             @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
@@ -141,11 +143,12 @@ public class UsuarioController implements DefaultController {
             @ApiResponse(description = "Unauthoried", responseCode = "401", content = @Content),
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
+
+    @PutMapping("/desativar-usuario/{id}")
     public ResponseEntity<DefaultResponseDTO<String>> desativarUsuario(@PathVariable Long id) {
         usuarioService.desativarUsuario(id);
         return retornarSucesso("Usuário desatiado com sucesso.");
     }
-
 
 
 }

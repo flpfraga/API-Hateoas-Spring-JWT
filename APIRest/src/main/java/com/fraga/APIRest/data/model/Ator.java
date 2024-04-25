@@ -22,6 +22,9 @@ public class Ator implements Serializable {
 	public Ator() {
 	}
 
+	public Ator(String nome) {
+		this.nome = nome;
+	}
 
 	public String getNome() {
 		return nome;
