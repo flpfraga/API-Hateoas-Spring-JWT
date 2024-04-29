@@ -30,7 +30,6 @@ public class AtorServiceImpl implements AtorService {
     @Override
     public List<Ator> salvarListaAtores(List<String> atores) {
         Map<String,Ator> mapAtoresSalvos = atorRepository.findAll().stream()
-                .filter(ator -> atores.contains(ator.getNome()))
                 .collect(Collectors.toMap(Ator::getNome, ator -> ator));
 
         List<Ator> atoresNaoSalvos = atores.stream().filter(ator -> !mapAtoresSalvos.containsKey(ator))
