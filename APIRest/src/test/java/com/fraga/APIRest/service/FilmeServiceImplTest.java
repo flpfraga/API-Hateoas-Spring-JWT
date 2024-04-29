@@ -110,7 +110,7 @@ public class FilmeServiceImplTest {
         Page<Filme> paginaFilme = new PageImpl<>(Collections.singletonList(filme), Pageable.ofSize(1), 1L);
         when(filmeRepository.findAll((Pageable) any())).thenReturn(paginaFilme);
 
-        filmeService.buscarFilmesOrdenadosPorMediaVotos(-1, 1, anyString());
+        filmeService.buscarFilmesOrdenadosPorMediaVotos(0, -1, "Asc");
     }
 
     @Test

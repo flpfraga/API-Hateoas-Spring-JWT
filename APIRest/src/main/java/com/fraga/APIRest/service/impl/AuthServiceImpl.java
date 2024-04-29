@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             authenticaionManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         }  catch (Exception e) {
-            throw new InvalidParams("Nome do usuário inválido");
+            throw new InvalidParams("Não é possível autenticar. Verifique o nome do usuário e a senha.");
         }
     }
     
