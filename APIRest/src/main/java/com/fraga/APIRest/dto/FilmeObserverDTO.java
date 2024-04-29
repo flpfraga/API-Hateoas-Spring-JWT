@@ -6,6 +6,10 @@ public class FilmeObserverDTO {
     private Double mediaVotos;
     private Boolean isVotado;
 
+    public FilmeObserverDTO() {
+
+    }
+
     public Long getIdFilme() {
         return idFilme;
     }

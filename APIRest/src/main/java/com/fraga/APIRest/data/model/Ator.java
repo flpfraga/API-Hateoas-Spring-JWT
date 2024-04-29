@@ -26,6 +26,11 @@ public class Ator implements Serializable {
 		this.nome = nome;
 	}
 
+	public Ator(Long id, String nome) {
+		this.id = id;
+		this.nome = nome;
+	}
+
 	public String getNome() {
 		return nome;
 	}
