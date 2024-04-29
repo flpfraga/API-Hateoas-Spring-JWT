@@ -211,4 +211,37 @@ public class FilmeServiceImplTest {
         verify(filmeRepository, times(1)).delete(filme);
     }
 
+    @Test
+    public void testarAtualizarFilmeComSucesso(){
+        Filme filme = filmeMock.getFilme();
+        when(filmeRepository.findById(anyLong())).thenReturn(Optional.of(filme));
+
+        List<Ator> atores = atorMock.getAtores();
+        when(atorService.salvarListaAtores(anyList())).thenReturn(atores);
+        when(mapper.map(any(), eq(Filme.class))).thenReturn(filme);
+
+        FilmeResponseDTO filmeResponseDTO = filmeMock.getFilmeResponseDTO();
+        when(mapper.map(any(), eq(FilmeResponseDTO.class))).thenReturn(filmeResponseDTO);
+
+        FilmeResponseDTO retorno = filmeService.atualizarFilmes(1L,filmeMock.getFilmeRequestDTO());
+
+        assertEquals(filmeResponseDTO.getDiretor(), retorno.getDiretor());
+        assertEquals(filmeResponseDTO.getTitulo(), retorno.getTitulo());
+        assertEquals(filmeResponseDTO.getGenero(), retorno.getGenero());
+    }
+
+    @Test
+    public void testarAtualizarAtoresFilmeComSucesso(){
+        Filme filme = filmeMock.getFilme();
+        when(filmeRepository.findById(anyLong())).thenReturn(Optional.of(filme));
+
+        List<Ator> atores = atorMock.getAtores();
+        when(atorService.buscarAtoresPorId(anyList())).thenReturn(atores);
+        filme.setAtores(atores);
+
+        filmeService.atualizarAtoresFilme(1L, Collections.singletonList(1L));
+
+        verify(filmeRepository, times(1)).save(filme);
+    }
+
 }
