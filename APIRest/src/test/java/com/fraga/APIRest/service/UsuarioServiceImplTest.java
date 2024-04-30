@@ -57,6 +57,14 @@ public class UsuarioServiceImplTest {
         assertEquals(2, pageRetorno.getContent().size());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testarBuscarTodosUsuariosExcessaoPaginable() {
+        Page<Usuario> pageUsuarios = new PageImpl<>(usuarioMock.getUsuarios(), Pageable.ofSize(1), 10);
+        when(usuarioRepository.findAll((Pageable) any())).thenReturn(pageUsuarios);
+
+        usuarioService.buscarTodosUsuarios(-1, 1);
+    }
+
     @Test
     public void testarBuscarPorIdComSucesso() {
         Usuario usuario = usuarioMock.getUsuario();

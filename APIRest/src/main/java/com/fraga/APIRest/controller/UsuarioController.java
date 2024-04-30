@@ -144,7 +144,7 @@ public class UsuarioController implements DefaultController {
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),})
 
-    @PutMapping("/desativar-usuario/{id}")
+    @PatchMapping("/desativar-usuario/{id}")
     public ResponseEntity<DefaultResponseDTO<String>> desativarUsuario(@PathVariable Long id) {
         usuarioService.desativarUsuario(id);
         return retornarSucesso("Usuário desatiado com sucesso.");
