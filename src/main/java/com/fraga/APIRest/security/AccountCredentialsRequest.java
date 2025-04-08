@@ -1,6 +1,7 @@
 package com.fraga.APIRest.security;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
@@ -10,9 +11,12 @@ public class AccountCredentialsRequest implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	@NotBlank(message = "Nome do usuário não pode ser vazio")
+	@NotBlank(message = "O nome de usuário é obrigatório")
+	@Size(min = 3, max = 50, message = "O nome de usuário deve ter entre 3 e 50 caracteres")
 	private String username;
-	@NotBlank(message = "Password do usuário não pode ser vazio")
+
+	@NotBlank(message = "A senha é obrigatória")
+	@Size(min = 6, max = 20, message = "A senha deve ter entre 6 e 20 caracteres")
 	private String password;
 
 	public AccountCredentialsRequest(String username, String password) {

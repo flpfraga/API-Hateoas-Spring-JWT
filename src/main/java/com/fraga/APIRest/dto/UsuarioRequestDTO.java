@@ -3,21 +3,39 @@ package com.fraga.APIRest.dto;
 import com.fraga.APIRest.data.model.Filme;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioRequestDTO {
-    @NotBlank
+    @NotBlank(message = "O nome de usuário é obrigatório")
+    @Size(min = 3, max = 50, message = "O nome de usuário deve ter entre 3 e 50 caracteres")
     private String nomeUsuario;
-    @NotBlank
+
+    @NotBlank(message = "O nome completo é obrigatório")
+    @Size(min = 3, max = 100, message = "O nome completo deve ter entre 3 e 100 caracteres")
     private String nomeCompleto;
-    @NotBlank
+
+    @NotBlank(message = "A senha é obrigatória")
+    @Size(min = 6, max = 20, message = "A senha deve ter entre 6 e 20 caracteres")
     private String senha;
-    private final Boolean  accountNonExpired = true;
-    private final Boolean accountNonLocked= true;
-    private final Boolean credentialsNonExpired= true;
+
+    @NotNull
+    private final Boolean accountNonExpired = true;
+
+    @NotNull
+    private final Boolean accountNonLocked = true;
+
+    @NotNull
+    private final Boolean credentialsNonExpired = true;
+
+    @NotNull
     private final Boolean enabled = true;
+
+    @NotNull
     private final Boolean active = true;
+
     private final List<Filme> filmeVotados = new ArrayList<>();
 
     public String getNomeUsuario() {

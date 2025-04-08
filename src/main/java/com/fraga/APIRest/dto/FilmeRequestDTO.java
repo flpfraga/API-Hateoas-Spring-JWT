@@ -1,17 +1,26 @@
 package com.fraga.APIRest.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 public class FilmeRequestDTO {
 
-    @NotBlank
+    @NotBlank(message = "O título é obrigatório")
+    @Size(min = 2, max = 100, message = "O título deve ter entre 2 e 100 caracteres")
     private String titulo;
-    @NotBlank
+
+    @NotBlank(message = "O diretor é obrigatório")
+    @Size(min = 3, max = 100, message = "O nome do diretor deve ter entre 3 e 100 caracteres")
     private String diretor;
-    @NotBlank
+
+    @NotBlank(message = "O gênero é obrigatório")
+    @Size(min = 3, max = 50, message = "O gênero deve ter entre 3 e 50 caracteres")
     private String genero;
+
+    @Size(max = 500, message = "Os detalhes não podem ultrapassar 500 caracteres")
     private String detalhes;
+
     private List<String> atores;
 
     public String getTitulo() {

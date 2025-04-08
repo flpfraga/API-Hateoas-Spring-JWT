@@ -34,7 +34,6 @@ public class AuthController {
     @PostMapping(value = "/signin", produces = { "application/json", "application/xml",
             "application/x-yaml" }, consumes = { "application/json", "application/xml", "application/x-yaml" })
     public ResponseEntity<Token> autenticar(@RequestBody @Valid AccountCredentialsRequest accountCredentialsRequest) {
-        authService.autenticar(accountCredentialsRequest);
         return ResponseEntity.ok(authService.autenticar(accountCredentialsRequest));
 
     }
